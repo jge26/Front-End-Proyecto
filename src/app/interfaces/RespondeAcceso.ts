@@ -13,6 +13,7 @@ export interface ResponseAcceso {
             email_verified_at: string | null;
             created_at: string;
             update_at: string;
+            speciality?: string  
         };
         token: string;
     }
