@@ -1,13 +1,13 @@
 import { Component, inject } from '@angular/core';
 import { AccesoService } from '../../services/acceso.service';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MedicRegister } from '../../interfaces/MedicRegister';
 
 @Component({
   selector: 'app-medic-register',
   standalone: true,
-  imports: [],
+  imports: [RouterModule],
   templateUrl: './medic-register.component.html',
   styleUrl: './medic-register.component.css'
 })

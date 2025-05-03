@@ -1,13 +1,13 @@
 import { Component, inject } from '@angular/core';
 import { AccesoService } from '../../services/acceso.service';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { UserRegister } from '../../interfaces/UserRegister';
 
 @Component({
   selector: 'app-user-register',
   standalone: true,
-  imports: [],
+  imports: [RouterModule],
   templateUrl: './user-register.component.html',
   styleUrl: './user-register.component.css'
 })
