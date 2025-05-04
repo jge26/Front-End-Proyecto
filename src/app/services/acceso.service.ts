@@ -5,6 +5,7 @@ import { UserRegister } from '../interfaces/UserRegister';
 import { Observable } from 'rxjs';
 import { ResponseAcceso } from '../interfaces/RespondeAcceso';
 import { MedicRegister } from '../interfaces/MedicRegister';
+import { Login } from '../interfaces/Login';
 
 @Injectable({
   providedIn: 'root'
@@ -36,6 +37,15 @@ export class AccesoService {
     const headers = this.getHeaders();
     return this.http.post<ResponseAcceso>(
       `${this.baseUrl}/register/medico`, objeto, { headers }
+    );
+  }
+
+  // <-- Metodo para logear usuarios -->
+  login(objeto: Login): Observable<ResponseAcceso> {
+    const headers = this.getHeaders();
+
+    return this.http.post<ResponseAcceso>(
+      `${this.baseUrl}/login`, objeto, {headers}
     );
   }
 }
