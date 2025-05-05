@@ -25,30 +25,48 @@ export class LoginComponent {
   
   login() {
     if (this.formLogin.invalid) return;
-
+  
     const objeto: Login = {
       email: this.formLogin.value.email,
       password: this.formLogin.value.password
     }
-
+  
     this.AccesoService.login(objeto).subscribe({
       next: (data: ResponseAcceso) => {
         if (data.status === 'success') {
-          localStorage.setItem('token', data.data.token);
-          this.router.navigate(['/home']);
-        }else {
-          alert('Error al iniciar sesion, verifique sus credenciales.');
+          const token = data.data.token;
+          const roleId = data.data.user.role_id;
+  
+          localStorage.setItem('token', token);
+          localStorage.setItem('user', JSON.stringify(data.data.user)); // opcional, útil para guards
+  
+          //<!-- Redirigir segun el role_id -->
+          switch (roleId) {
+            case 1:
+              this.router.navigate(['/patient']);
+              break;
+            case 2:
+              this.router.navigate(['/medic']);
+              break;
+            case 3:
+              this.router.navigate(['/admin']);
+              break;
+            default:
+              this.router.navigate(['/home']);
+          }
+        } else {
+          alert('Error al iniciar sesión. Verifique sus credenciales.');
         }
       },
       error: (error) => {
-        console.error('Error al iniciar sesion', error);
-        alert('Error al iniciar sesion, verifique sus credenciales.');
+        console.error('Error al iniciar sesión', error);
+        alert('Error al iniciar sesión. Verifique sus credenciales.');
       },
     });
   }
-
+  
   registrarse() {
     this.router.navigate(['register']);
   }
-
+  
 }

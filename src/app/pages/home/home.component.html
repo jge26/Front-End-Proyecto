@@ -4,7 +4,7 @@
         <div class="container mx-auto flex flex-wrap items-center justify-between py-4 px-6">
           <!-- Logo -->
           <a href="/">
-            <img src="/assets/img/SaludYa_Logo.png" alt="Logo Clínica" class="w-24 h-24"/>
+            <img src="assets/img/Logo.png" alt="Logo Clínica" class="w-28 h-28"/>
           </a>
       
           <!-- Menú -->
@@ -39,10 +39,13 @@
             </li>
           </ul>
       
-          <!-- Botón Acceder (mantiene su estilo original) -->
-          <button class="ml-auto sm:ml-4 bg-amber-400 hover:bg-blue-800 text-black hover:text-white px-6 py-2 rounded-lg font-['Fredoka_One'] transition-colors">
-            Acceder
-          </button>
+          <!-- Botón Acceder -->
+          <button
+          (click)="irALogin()"
+          class="ml-auto sm:ml-4 bg-amber-400 hover:bg-blue-800 text-black hover:text-white px-6 py-2 rounded-lg font-['Fredoka_One'] transition-colors cursor-pointer"
+        >
+          Acceder
+        </button>
         </div>
       </nav>
     <!-- HERO -->
