@@ -5,5 +5,4 @@ export interface MedicRegister {
     rut: string;
     phone: string;
     email: string;
-    password: string;
 }
