@@ -10,22 +10,22 @@ import { ForgotPasswordComponent } from './pages/forgot-password/forgot-password
 import { ResetPasswordComponent } from './pages/reset-password/reset-password.component';
 
 export const routes: Routes = [
-  {
-    path: 'home',
-    component: HomeComponent,
-  },
-  {
-    path: 'patient',
-    component: PatientComponent,
-  },
-  {
-    path: 'medic',
-    component: MedicComponent,
-  },
-  {
-    path: 'admin',
-    component: AdminComponent,
-  },
+    {
+        path: 'home',
+        component: HomeComponent,
+    },
+    {
+        path: 'patient',
+        component: PatientComponent,
+    },
+    {
+        path: 'medic',
+        component: MedicComponent,
+    },
+    {
+        path: 'admin',
+        component: AdminComponent,
+    },
     
     {
         path: 'login',
@@ -50,7 +50,7 @@ export const routes: Routes = [
     },
     {     
         path: '**',
-        redirectTo: 'login',
+        redirectTo: 'home',
         pathMatch: 'full',
     },
 ];
