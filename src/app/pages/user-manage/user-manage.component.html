@@ -1,0 +1,86 @@
+<section class="flex min-h-screen">
+  <!-- Sidebar -->
+  <aside class="w-1/6 bg-white shadow-md p-6 space-y-8">
+    <!-- Clínica Logo -->
+    <div class="flex justify-center mb-8">
+        <a [routerLink]="['/home']">
+        <img src="assets/img/Logo.png" alt="Logo Clínica" class="w-32 h-auto cursor-pointer" />
+        </a>
+    </div>
+    <!-- Navegación -->
+    <nav class="flex flex-col space-y-8">
+      <button
+        routerLink="/home"
+        class="w-full text-center px-4 py-2 rounded hover:bg-[#ff9f1c] bg-white transition"
+      >
+        Inicio
+      </button>
+      <button
+        routerLink="/MedicRegister"
+        class="w-full text-center px-4 py-2 rounded hover:bg-[#ff9f1c] bg-white transition"
+      >
+        Registro Nuevo Médico
+      </button>
+      <button
+        routerLink="/citas-medicas"
+        class="w-full text-center px-4 py-2 rounded hover:bg-[#ff9f1c] bg-white transition"
+      >
+        Administrar Citas Médicas
+      </button>
+    </nav>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="flex-1 p-8">
+    <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+      <h1 class="text-3xl font-bold bg-gray-50 px-6 py-4 border-b">Gestión de Usuarios</h1>
+
+      <!-- Si hay usuarios -->
+      <ng-container *ngIf="users.length; else noUsers">
+        <div class="overflow-x-auto">
+          <table class="w-full table-auto">
+            <thead class="bg-[#ff9f1c]">
+              <tr>
+                <th class="px-6 py-4 text-left">Nombre</th>
+                <th class="px-6 py-4 text-left">Apellidos</th>
+                <th class="px-6 py-4 text-left">RUT</th>
+                <th class="px-6 py-4 text-left">Teléfono</th>
+                <th class="px-6 py-4 text-left">Correo</th>
+                <th class="px-6 py-4 text-center">Estado</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200">
+              <tr *ngFor="let u of users">
+                <td class="px-6 py-4">{{ u.name }}</td>
+                <td class="px-6 py-4">{{ u.lastname }}</td>
+                <td class="px-6 py-4">{{ u.rut }}</td>
+                <td class="px-6 py-4">{{ u.phone }}</td>
+                <td class="px-6 py-4">{{ u.email }}</td>
+                <td class="px-6 py-4 text-center">
+                  <!-- Interruptor -->
+                  <div
+                    (click)="toggleActive(u)"
+                    role="switch"
+                    [attr.aria-checked]="u.is_active"
+                    class="cursor-pointer relative inline-block w-14 h-7 rounded-full transition-colors duration-200"
+                    [ngClass]="u.is_active ? 'bg-green-500' : 'bg-red-500'"
+                  >
+                    <span
+                      class="absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full shadow transition-transform duration-200"
+                      [ngClass]="u.is_active ? 'translate-x-7' : 'translate-x-0'"
+                    ></span>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </ng-container>
+
+      <!-- Mensaje si no hay usuarios -->
+      <ng-template #noUsers>
+        <p class="text-center text-gray-600 py-12">No hay clientes para mostrar.</p>
+      </ng-template>
+    </div>
+  </main>
+</section>

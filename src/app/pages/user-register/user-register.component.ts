@@ -1,13 +1,13 @@
 import { Component, inject } from '@angular/core';
 import { AccesoService } from '../../services/acceso.service';
 import { Router, RouterModule } from '@angular/router';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { UserRegister } from '../../interfaces/UserRegister';
 
 @Component({
   selector: 'app-user-register',
   standalone: true,
-  imports: [RouterModule],
+  imports: [RouterModule, ReactiveFormsModule],
   templateUrl: './user-register.component.html',
   styleUrl: './user-register.component.css'
 })
@@ -18,12 +18,12 @@ export class UserRegisterComponent {
   public formBuild = inject(FormBuilder);
 
   public formRegister: FormGroup = this.formBuild.group({
-    name: ['', Validators.required],
-    lastname: ['', Validators.required],
-    rut: ['', Validators.required],
-    phone: ['', Validators.required],
-    email: ['',[Validators.required, Validators.email]],
-    password: ['',[Validators.required, Validators.minLength(6)]],
+    name: ['', [Validators.required]],
+    lastname: ['', [Validators.required]],
+    rut: ['', [Validators.required]],
+    phone: ['', [Validators.required]],
+    email: ['',[Validators.required]],
+    password: ['',[Validators.required]],
     password_confirmation: ['', Validators.required]
   });
 

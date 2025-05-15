@@ -8,6 +8,7 @@ import { MedicRegisterComponent } from './pages/medic-register/medic-register.co
 import { LoginComponent } from './pages/login/login.component';
 import { ForgotPasswordComponent } from './pages/forgot-password/forgot-password.component';
 import { ResetPasswordComponent } from './pages/reset-password/reset-password.component';
+import { UserManageComponent } from './pages/user-manage/user-manage.component';
 
 export const routes: Routes = [
     {
@@ -47,6 +48,10 @@ export const routes: Routes = [
     { 
         path: 'reset-password',
          component: ResetPasswordComponent 
+    },
+    { 
+        path: 'user-manage',
+         component: UserManageComponent 
     },
     {     
         path: '**',
