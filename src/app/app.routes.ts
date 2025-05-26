@@ -9,6 +9,7 @@ import { LoginComponent } from './pages/login/login.component';
 import { ForgotPasswordComponent } from './pages/forgot-password/forgot-password.component';
 import { ResetPasswordComponent } from './pages/reset-password/reset-password.component';
 import { UserManageComponent } from './pages/user-manage/user-manage.component';
+import { MedicAvailabilityComponent } from './pages/medic-availability/medic-availability.component';
 
 export const routes: Routes = [
     {
@@ -27,7 +28,6 @@ export const routes: Routes = [
         path: 'admin',
         component: AdminComponent,
     },
-    
     {
         path: 'login',
         component: LoginComponent,
@@ -44,7 +44,6 @@ export const routes: Routes = [
         path: 'forgot-password',
         component: ForgotPasswordComponent
     },
-      
     { 
         path: 'reset-password',
          component: ResetPasswordComponent 
@@ -52,6 +51,10 @@ export const routes: Routes = [
     { 
         path: 'user-manage',
          component: UserManageComponent 
+    },
+    { 
+        path: 'medic-availability',
+         component: MedicAvailabilityComponent 
     },
     {     
         path: '**',

@@ -14,32 +14,37 @@ import { ResponseAcceso } from '../../interfaces/RespondeAcceso';
 })
 export class LoginComponent {
 
+  // <-- Inyecta el servicio de acceso, el router y el constructor de formularios -->
   private AccesoService = inject(AccesoService);
   private router = inject(Router);
   public formBuild = inject(FormBuilder);
 
+  // <-- Define el formulario reactivo con campos de email y password requeridos -->
   public formLogin: FormGroup = this.formBuild.group({
     email: ['', Validators.required],
     password: ['', Validators.required]
   });
   
+  // <-- Envía los datos del formulario al backend, verifica el login y redirige según el rol -->
   login() {
     if (this.formLogin.invalid) return;
-  
+
     const objeto: Login = {
       email: this.formLogin.value.email,
       password: this.formLogin.value.password
     }
+
     console.log(objeto);
+
     this.AccesoService.login(objeto).subscribe({
       next: (data: ResponseAcceso) => {
         if (data.status === 'success') {
           const token = data.data.token;
           const roleId = data.data.user.role_id;
-  
+
           localStorage.setItem('token', token);
-  
-          //<!-- Redirigir segun el role_id -->
+
+          // <-- Redirige al usuario según su rol -->
           switch (roleId) {
             case 1:
               this.router.navigate(['/admin']);
@@ -63,9 +68,10 @@ export class LoginComponent {
       },
     });
   }
-  
+
+  // <-- Redirige al usuario a la pantalla de registro -->
   registrarse() {
     this.router.navigate(['register']);
   }
-  
+
 }

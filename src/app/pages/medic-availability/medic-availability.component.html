@@ -1,0 +1,109 @@
+<!-- src/app/pages/medic/medic-availability.component.html -->
+<section class="p-8 bg-[#CBF3F0] min-h-screen">
+  <!-- Encabezado -->
+  <div class="flex items-center justify-between mb-6 px-4">
+    <!-- Logo -->
+    <a [routerLink]="['/home']">
+      <img src="assets/img/Logo.png" alt="Logo Clínica" class="h-20 w-auto cursor-pointer" />
+    </a>
+
+    <!-- Título -->
+    <h1 class="text-2xl font-bold text-white bg-[#2EC4B6] px-4 py-2 rounded">
+      Horario: Dr. Pérez
+    </h1>
+
+    <!-- Botones de acción -->
+    <div class="space-x-2">
+      <button
+        *ngIf="!editing"
+        (click)="startEdit()"
+        class="bg-[#FFBF69] text-black font-bold px-4 py-2 rounded hover:bg-[#ff9f1c] transition"
+      >
+        Editar Horario
+      </button>
+      <button
+        *ngIf="editing"
+        (click)="saveSchedule()"
+        class="bg-green-500 text-white font-bold px-4 py-2 rounded hover:bg-green-600 transition"
+      >
+        Guardar
+      </button>
+      <button
+        *ngIf="editing"
+        (click)="cancelEdit()"
+        class="bg-red-500 text-white font-bold px-4 py-2 rounded hover:bg-red-600 transition"
+      >
+        Cancelar
+      </button>
+    </div>
+  </div>
+
+  <!-- Tabla de disponibilidad -->
+  <div class="overflow-auto rounded-lg shadow-lg bg-white p-4 mx-4">
+    <table class="table-fixed w-full border-collapse border-2 border-black">
+      <thead>
+        <tr>
+          <th class="w-24 border-2 border-black bg-[#FFBF69]"></th>
+          <th
+            *ngFor="let d of days"
+            class="border-2 border-black bg-[#2EC4B6] text-white font-bold text-center"
+          >
+            {{ d }}
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          *ngFor="let t of times; let i = index"
+          class="h-16"
+          [ngClass]="i % 2 === 0 ? 'bg-[#cbf3f0]' : 'bg-white'"
+        >
+          <!-- Hora -->
+          <td class="border-2 border-black bg-[#FFBF69] text-right pr-2 font-medium">
+            {{ t }}
+          </td>
+
+          <!-- Celdas de disponibilidad -->
+          <td
+            *ngFor="let d of days"
+            class="border-2 border-black p-4 relative cursor-pointer"
+            (click)="toggleSlot(d, t)"
+          >
+            <!-- Indicador circular -->
+            <div
+              class="w-3 h-3 rounded-full absolute top-1 right-1 transition-colors"
+              [ngClass]="{
+                'bg-green-500': getStatus(d, t) === 'available',
+                'bg-red-500': getStatus(d, t) === 'occupied',
+                'bg-gray-500': getStatus(d, t) === 'blocked'
+              }"
+              [title]="
+                getStatus(d, t) === 'available'
+                  ? 'Disponible'
+                  : getStatus(d, t) === 'occupied'
+                  ? 'Ocupado por paciente'
+                  : 'Bloqueado'
+              "
+            ></div>
+
+            <!-- Texto de paciente -->
+            <div
+              *ngIf="getStatus(d, t) === 'occupied' && getPatientName(d, t)"
+              class="text-xs mt-1 text-gray-700 font-medium"
+            >
+              Paciente: {{ getPatientName(d, t) }}
+            </div>
+
+            <!-- Texto de bloqueado -->
+            <div
+              *ngIf="getStatus(d, t) === 'blocked'"
+              class="text-xs mt-1 text-gray-600 italic font-medium"
+            >
+              Bloqueado
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>

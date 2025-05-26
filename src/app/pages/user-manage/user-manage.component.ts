@@ -1,9 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { Router, RouterModule } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
 
-//Prueba
-
+// <-- Modelo de usuario con campos obligatorios y control de edición -->
 interface User {
   id?: number;
   name: string;
@@ -12,23 +12,26 @@ interface User {
   phone: string;
   email: string;
   is_active: boolean;
+  editing?: boolean; // <-- Controla si está en modo edición -->
+  backup?: {         // <-- Almacena copia de los datos para cancelar cambios -->
+    name: string;
+    phone: string;
+    email: string;
+  };
 }
-
-//Prueba
-
-
 @Component({
   selector: 'app-user-manage',
   standalone: true,
-  imports: [CommonModule, RouterModule], // Agregar despues el form
+  imports: [CommonModule, RouterModule, FormsModule],
   templateUrl: './user-manage.component.html',
-  styleUrl: './user-manage.component.css'
+  styleUrls: ['./user-manage.component.css']
 })
 export class UserManageComponent {
 
-  //Prueba
+  // **Prueba**
 
-   users: User[] = [
+  // <-- Lista simulada de usuarios para pruebas, será reemplazada por datos desde el backend -->
+  users: User[] = [
     {
       name: 'Juan',
       lastname: 'Pérez',
@@ -69,14 +72,51 @@ export class UserManageComponent {
       email: 'luis.lopez@mail.com',
       is_active: false
     }
-
-    //Prueba
+    
+      // **Prueba**
 
   ];
 
+
+  //  **Prueba**
+
+  // <-- Activa o desactiva un usuario al hacer clic, simulado con consola -->
   toggleActive(u: User) {
     u.is_active = !u.is_active;
-    // aquí podrías llamar a tu servicio para persistir el cambio
     console.log(`Usuario ${u.name} ${u.lastname} ahora está ${u.is_active ? 'activo' : 'inactivo'}`);
   }
+  
+  // **Prueba**
+
+  // <-- Entra en modo edición guardando una copia de los datos originales -->
+  startEdit(u: User) {
+    u.backup = {
+      name: u.name,
+      phone: u.phone,
+      email: u.email
+    };
+    u.editing = true;
+  }
+
+  // <-- Cancela la edición y restaura los datos desde la copia (backup) -->
+  cancelEdit(u: User) {
+    if (u.backup) {
+      u.name  = u.backup.name;
+      u.phone = u.backup.phone;
+      u.email = u.backup.email;
+    }
+    u.editing = false;
+  }
+
+  // **Prueba**
+
+  // <-- Simula el guardado de cambios del usuario, será reemplazado por una llamada a servicio -->
+  save(u: User) {
+    console.log('Guardando cambios de', u);
+    u.editing = false;
+    delete u.backup;
+  }
+
+  //  **Prueba** 
+
 }

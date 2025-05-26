@@ -13,10 +13,12 @@ import { MedicRegister } from '../../interfaces/MedicRegister';
 })
 export class MedicRegisterComponent {
 
+  // <-- Inyecta el servicio de acceso, el router y el constructor de formularios -->
   private accesoService = inject(AccesoService);
-  private router = inject (Router);
+  private router = inject(Router);
   public formBuild = inject(FormBuilder);
   
+  // <-- Define el formulario reactivo para el registro de médico con campos requeridos -->
   public formRegister: FormGroup = this.formBuild.group({
     name: ['', Validators.required],
     lastname: ['', Validators.required],
@@ -26,6 +28,7 @@ export class MedicRegisterComponent {
     email: ['', [Validators.required, Validators.email]]
   });
 
+  // <-- Envía los datos del formulario al backend para registrar un nuevo médico -->
   registrarMedico() {
     if (this.formRegister.invalid) return;
 
@@ -54,6 +57,7 @@ export class MedicRegisterComponent {
     });
   }
 
+  // <-- Redirige al usuario de vuelta al login -->
   volver() {
     this.router.navigate(['login']);
   }
