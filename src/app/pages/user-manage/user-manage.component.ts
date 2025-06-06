@@ -26,14 +26,32 @@ export class UserManageComponent implements OnInit {
   // <-- Lista de usuarios cargada desde el backend -->
   users: User[] = [];
 
+  // <-- Apellido del usuario logeado extraído del token -->
+  public currentUserLastname: string = '';
+
   constructor(private userService: UserService) {}
 
   // <-- Cargar usuarios reales al iniciar el componente -->
   ngOnInit() {
+    this.loadCurrentUserLastname();
+
     this.userService.getAllUsers().subscribe({
       next: (data) => this.users = data,
       error: (err) => console.error('Error al obtener usuarios:', err)
     });
+  }
+
+  // <-- Extrae el apellido desde el token JWT almacenado en localStorage -->
+  loadCurrentUserLastname() {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      this.currentUserLastname = payload.lastname || 'Usuario';
+    } catch (error) {
+      console.error('No se pudo decodificar el token:', error);
+    }
   }
 
   // <-- Activar o desactivar cuenta de usuario -->

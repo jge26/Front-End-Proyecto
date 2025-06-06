@@ -10,6 +10,8 @@ import { ForgotPasswordComponent } from './pages/forgot-password/forgot-password
 import { ResetPasswordComponent } from './pages/reset-password/reset-password.component';
 import { UserManageComponent } from './pages/user-manage/user-manage.component';
 import { MedicAvailabilityComponent } from './pages/medic-availability/medic-availability.component';
+import { adminGuard } from './guards/admin.guard';
+import { medicGuard } from './guards/medic.guard';
 
 export const routes: Routes = [
     {
@@ -23,10 +25,12 @@ export const routes: Routes = [
     {
         path: 'medic',
         component: MedicComponent,
+        canActivate: [medicGuard]
     },
     {
         path: 'admin',
         component: AdminComponent,
+        canActivate: [adminGuard]
     },
     {
         path: 'login',
@@ -39,6 +43,7 @@ export const routes: Routes = [
     {
         path: 'MedicRegister',
         component: MedicRegisterComponent,
+        canActivate: [adminGuard]
     },
     {
         path: 'forgot-password',
@@ -50,11 +55,13 @@ export const routes: Routes = [
     },
     { 
         path: 'user-manage',
-         component: UserManageComponent 
+         component: UserManageComponent,
+         canActivate: [adminGuard]
     },
     { 
         path: 'medic-availability',
-         component: MedicAvailabilityComponent 
+         component: MedicAvailabilityComponent,
+        canActivate: [medicGuard]
     },
     {     
         path: '**',

@@ -22,8 +22,28 @@ export class MedicAvailabilityComponent {
   availability: { [key: string]: { status: SlotStatus; patient: string | null } } = {};
   private originalAvailability: { [key: string]: { status: SlotStatus; patient: string | null } } = {};
 
+  // <-- Muestra mensaje de éxito después de guardar -->
+  public showSuccessMessage: boolean = false;
+  
+  // <-- Apellido del médico logeado -->
+  public currentUserLastname: string = '';
+
+  // <-- Extrae el apellido desde el token JWT almacenado en localStorage -->
+  loadCurrentUserLastname() {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      this.currentUserLastname = payload.lastname || 'Usuario';
+    } catch (error) {
+      console.error('No se pudo decodificar el token:', error);
+    }
+  }
+
   constructor() {
     this.initializeAvailability();
+    this.loadCurrentUserLastname();
   }
 
   initializeAvailability() {
@@ -77,8 +97,14 @@ export class MedicAvailabilityComponent {
     return this.availability[key]?.status ?? 'available';
   }
 
-  saveSchedule() {
-    console.log('Guardando horario:', this.availability);
-    this.editing = false;
-  }
+saveSchedule() {
+  console.log('Guardando horario:', this.availability);
+  this.editing = false;
+
+  // <-- Mostrar mensaje de éxito temporalmente -->
+  this.showSuccessMessage = true;
+  setTimeout(() => {
+    this.showSuccessMessage = false;
+  }, 3000); // <-- desaparece en 3 segundos
+}
 }
