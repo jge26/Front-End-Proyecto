@@ -1,37 +1,31 @@
-<!-- src/app/pages/medic/medic-availability.component.html -->
-<section class="p-8 bg-[#CBF3F0] min-h-screen">
+<section class="p-6 bg-[#CBF3F0] min-h-screen">
   <!-- Encabezado -->
-  <div class="flex items-center justify-between mb-6 px-4">
-    <!-- Logo -->
+  <div class="flex items-center justify-between mb-4 px-2">
     <a [routerLink]="['/home']">
-      <img src="assets/img/Logo.png" alt="Logo Clínica" class="h-20 w-auto cursor-pointer" />
+      <img src="assets/img/Logo.png" alt="Logo Clínica" class="h-16 w-auto cursor-pointer" />
     </a>
-
-    <!-- Título -->
-    <h1 class="text-2xl font-bold text-white bg-[#2EC4B6] px-4 py-2 rounded">
+    <h1 class="text-xl font-bold text-white bg-[#2EC4B6] px-3 py-1 rounded">
       Horario: Dr. Pérez
     </h1>
-
-    <!-- Botones de acción -->
     <div class="space-x-2">
       <button
         *ngIf="!editing"
         (click)="startEdit()"
-        class="bg-[#FFBF69] text-black font-bold px-4 py-2 rounded hover:bg-[#ff9f1c] transition"
+        class="bg-[#FFBF69] text-black font-bold px-3 py-1 rounded hover:bg-[#ff9f1c] transition"
       >
         Editar Horario
       </button>
       <button
         *ngIf="editing"
         (click)="saveSchedule()"
-        class="bg-green-500 text-white font-bold px-4 py-2 rounded hover:bg-green-600 transition"
+        class="bg-green-500 text-white font-bold px-3 py-1 rounded hover:bg-green-600 transition"
       >
         Guardar
       </button>
       <button
         *ngIf="editing"
         (click)="cancelEdit()"
-        class="bg-red-500 text-white font-bold px-4 py-2 rounded hover:bg-red-600 transition"
+        class="bg-red-500 text-white font-bold px-3 py-1 rounded hover:bg-red-600 transition"
       >
         Cancelar
       </button>
@@ -39,14 +33,14 @@
   </div>
 
   <!-- Tabla de disponibilidad -->
-  <div class="overflow-auto rounded-lg shadow-lg bg-white p-4 mx-4">
-    <table class="table-fixed w-full border-collapse border-2 border-black">
+  <div class="overflow-auto rounded-lg shadow-lg bg-white p-3 mx-2">
+    <table class="table-fixed w-full border-collapse border-2 border-black text-sm">
       <thead>
         <tr>
-          <th class="w-24 border-2 border-black bg-[#FFBF69]"></th>
+          <th class="w-20 border-2 border-black bg-[#FFBF69]"></th>
           <th
             *ngFor="let d of days"
-            class="border-2 border-black bg-[#2EC4B6] text-white font-bold text-center"
+            class="border-2 border-black bg-[#2EC4B6] text-white font-bold text-center py-2"
           >
             {{ d }}
           </th>
@@ -55,23 +49,20 @@
       <tbody>
         <tr
           *ngFor="let t of times; let i = index"
-          class="h-16"
+          class="h-12"
           [ngClass]="i % 2 === 0 ? 'bg-[#cbf3f0]' : 'bg-white'"
         >
-          <!-- Hora -->
           <td class="border-2 border-black bg-[#FFBF69] text-right pr-2 font-medium">
             {{ t }}
           </td>
-
-          <!-- Celdas de disponibilidad -->
           <td
             *ngFor="let d of days"
-            class="border-2 border-black p-4 relative cursor-pointer"
+            class="border-2 border-black p-2 relative cursor-pointer"
             (click)="toggleSlot(d, t)"
           >
-            <!-- Indicador circular -->
+            <!-- Indicador circular de estado -->
             <div
-              class="w-3 h-3 rounded-full absolute top-1 right-1 transition-colors"
+              class="w-2.5 h-2.5 rounded-full absolute top-1 right-1 transition-colors"
               [ngClass]="{
                 'bg-green-500': getStatus(d, t) === 'available',
                 'bg-red-500': getStatus(d, t) === 'occupied',
@@ -86,21 +77,35 @@
               "
             ></div>
 
-            <!-- Texto de paciente -->
+            <!-- Nombre del paciente -->
             <div
               *ngIf="getStatus(d, t) === 'occupied' && getPatientName(d, t)"
-              class="text-xs mt-1 text-gray-700 font-medium"
+              class="text-[10px] mt-1 text-gray-700 font-medium"
             >
               Paciente: {{ getPatientName(d, t) }}
             </div>
 
-            <!-- Texto de bloqueado -->
+            <!-- Texto bloqueado -->
             <div
               *ngIf="getStatus(d, t) === 'blocked'"
-              class="text-xs mt-1 text-gray-600 italic font-medium"
+              class="text-[10px] mt-1 text-gray-600 italic font-medium"
             >
               Bloqueado
             </div>
+
+            <!-- X grande pero no total para bloqueado -->
+            <svg
+              *ngIf="getStatus(d, t) === 'blocked'"
+              class="absolute inset-0 w-3/4 h-3/4 m-auto text-gray-600 opacity-50 pointer-events-none"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="4"
+              viewBox="0 0 24 24"
+              preserveAspectRatio="xMidYMid meet"
+            >
+              <line x1="0" y1="0" x2="24" y2="24" />
+              <line x1="24" y1="0" x2="0" y2="24" />
+            </svg>
           </td>
         </tr>
       </tbody>

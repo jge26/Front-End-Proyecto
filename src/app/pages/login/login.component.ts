@@ -4,11 +4,12 @@ import { Router, RouterModule } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Login } from '../../interfaces/Login';
 import { ResponseAcceso } from '../../interfaces/RespondeAcceso';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [RouterModule, ReactiveFormsModule],
+  imports: [CommonModule,RouterModule, ReactiveFormsModule],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
 })
@@ -19,20 +20,26 @@ export class LoginComponent {
   private router = inject(Router);
   public formBuild = inject(FormBuilder);
 
-  // <-- Define el formulario reactivo con campos de email y password requeridos -->
+  // <-- Define el formulario reactivo con campos requeridos -->
   public formLogin: FormGroup = this.formBuild.group({
     email: ['', Validators.required],
     password: ['', Validators.required]
   });
-  
-  // <-- Envía los datos del formulario al backend, verifica el login y redirige según el rol -->
+
+  // <-- Mensaje de error personalizado si falla el login -->
+  public loginError: string = '';
+
+  // <-- Controla si debe activarse la animación de sacudida -->
+  public triggerShake: boolean = false;
+
+  // <-- Envía los datos al backend y redirige según el rol -->
   login() {
     if (this.formLogin.invalid) return;
 
     const objeto: Login = {
       email: this.formLogin.value.email,
       password: this.formLogin.value.password
-    }
+    };
 
     console.log(objeto);
 
@@ -53,23 +60,38 @@ export class LoginComponent {
               this.router.navigate(['/patient']);
               break;
             case 3:
-              this.router.navigate(['//medic']);
+              this.router.navigate(['/medic']);
               break;
             default:
               this.router.navigate(['/home']);
           }
         } else {
-          alert('Error al iniciar sesión. Verifique sus credenciales.');
+          this.loginError = 'Error al iniciar sesión. Verifique sus credenciales.';
         }
       },
       error: (error) => {
         console.error('Error al iniciar sesión', error);
-        alert('Error al iniciar sesión. Verifique sus credenciales.');
-      },
+
+        // <-- Ocultar mensaje y quitar clase shake temporalmente -->
+        this.loginError = '';
+        this.triggerShake = false;
+
+        // <-- Esperar un momento antes de volver a mostrar y animar -->
+        setTimeout(() => {
+          this.triggerShake = true;
+
+          // <-- Mostrar mensaje según tipo de error -->
+          if (error.error?.status === 'disabled') {
+            this.loginError = 'Su cuenta ha sido deshabilitada. Contacte al administrador.';
+          } else {
+            this.loginError = 'Error al iniciar sesión. Verifique sus credenciales.';
+          }
+        }, 10); // <-- Suficiente para reiniciar animación
+      }
     });
   }
 
-  // <-- Redirige al usuario a la pantalla de registro -->
+  // <-- Redirige al formulario de registro -->
   registrarse() {
     this.router.navigate(['register']);
   }
