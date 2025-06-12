@@ -47,12 +47,12 @@ export class AccesoService {
 // <-- Metodo para solicitar recuperación de contraseña -->
   recoverPassword(email: string): Observable<ResponseAcceso> {
     const headers = this.getHeaders();
-    return this.http.post<ResponseAcceso>(`${this.baseUrl}/forgot-password`, { email }, { headers });
+    return this.http.post<ResponseAcceso>(`${this.baseUrl}/password/forgot`, { email }, { headers });
   }
 
 // <-- Metodo para restablecer la contraseña -->
   resetPassword(token: string, password: string): Observable<ResponseAcceso> {
     const headers = this.getHeaders();
-    return this.http.post<ResponseAcceso>(`${this.baseUrl}/reset-password`, { token, password }, { headers });
+    return this.http.post<ResponseAcceso>(`${this.baseUrl}/password/reset`, { token, password }, { headers });
   }
 }
