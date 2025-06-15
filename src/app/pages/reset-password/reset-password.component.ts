@@ -14,11 +14,13 @@ import { CommonModule } from '@angular/common';
 })
 export class ResetPasswordComponent implements OnInit {
 
+  // <-- Inyecta servicios necesarios: acceso, navegación, rutas y formularios -->
   private accesoService = inject(AccesoService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private formBuilder = inject(FormBuilder);
 
+  // <-- Define el formulario con campos para nueva contraseña y confirmación -->
   public formResetPassword: FormGroup = this.formBuilder.group({
     newPassword: ['', Validators.required],
     confirmPassword: ['', Validators.required]
@@ -26,6 +28,7 @@ export class ResetPasswordComponent implements OnInit {
 
   private token: string = '';
 
+  // <-- Obtiene el token desde los parámetros de la URL al iniciar el componente -->
   ngOnInit(): void {
     this.token = this.route.snapshot.queryParamMap.get('token') || '';
     if (!this.token) {
@@ -34,6 +37,7 @@ export class ResetPasswordComponent implements OnInit {
     }
   }
 
+  // <-- Envía la nueva contraseña al backend si el formulario es válido y las contraseñas coinciden -->
   resetPassword() {
     if (this.formResetPassword.invalid) {
       this.formResetPassword.markAllAsTouched();

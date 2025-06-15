@@ -9,25 +9,30 @@ import { LoginComponent } from './pages/login/login.component';
 import { ForgotPasswordComponent } from './pages/forgot-password/forgot-password.component';
 import { ResetPasswordComponent } from './pages/reset-password/reset-password.component';
 import { AppointmentComponent } from './pages/appointment/appointment.component';
+import { UserManageComponent } from './pages/user-manage/user-manage.component';
+import { MedicAvailabilityComponent } from './pages/medic-availability/medic-availability.component';
+import { adminGuard } from './guards/admin.guard';
+import { medicGuard } from './guards/medic.guard';
 
 export const routes: Routes = [
-  {
-    path: 'home',
-    component: HomeComponent,
-  },
-  {
-    path: 'patient',
-    component: PatientComponent,
-  },
-  {
-    path: 'medic',
-    component: MedicComponent,
-  },
-  {
-    path: 'admin',
-    component: AdminComponent,
-  },
-    
+    {
+        path: 'home',
+        component: HomeComponent,
+    },
+    {
+        path: 'patient',
+        component: PatientComponent,
+    },
+    {
+        path: 'medic',
+        component: MedicComponent,
+        canActivate: [medicGuard]
+    },
+    {
+        path: 'admin',
+        component: AdminComponent,
+        canActivate: [adminGuard]
+    },
     {
         path: 'login',
         component: LoginComponent,
@@ -43,19 +48,29 @@ export const routes: Routes = [
     {
         path: 'MedicRegister',
         component: MedicRegisterComponent,
+        canActivate: [adminGuard]
     },
     {
         path: 'forgot-password',
         component: ForgotPasswordComponent
     },
-      
     { 
         path: 'reset-password',
          component: ResetPasswordComponent 
     },
+    { 
+        path: 'user-manage',
+         component: UserManageComponent,
+         canActivate: [adminGuard]
+    },
+    { 
+        path: 'medic-availability',
+         component: MedicAvailabilityComponent,
+        canActivate: [medicGuard]
+    },
     {     
         path: '**',
-        redirectTo: 'login',
+        redirectTo: 'home',
         pathMatch: 'full',
     },
 ];
