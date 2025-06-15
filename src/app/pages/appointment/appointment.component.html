@@ -1,0 +1,53 @@
+<!-- solicitar-cita.component.html -->
+<div class="w-full min-h-screen relative bg-teal-400 overflow-hidden flex justify-center items-center">
+    <div class="w-[798px] h-[1069px] bg-white rounded-[45px] p-8 relative">
+  
+      <img class="w-44 h-44 mx-auto mb-6" src="assets/img/Logo.png" alt="Logo" />
+      <h1 class="text-black text-4xl font-['Fredoka_One'] text-center mb-6">SOLICITAR CITA MÉDICA</h1>
+      
+  
+      <!-- Nombre del Paciente -->
+      <label class="block text-black text-3xl mb-2 font-['Fredoka_One']">Nombre del Paciente</label>
+      <input type="text" class="w-full h-16 rounded-[10px] border border-stone-400 px-4 text-2xl mb-4" placeholder="Ej: Juan Pérez" />
+  
+      <div class="flex flex-wrap gap-4 mb-6">
+  <!-- Fecha -->
+        <div class="w-[48%]">
+          <label class="block text-black text-3xl mb-2 font-['Fredoka_One']">Fecha de la cita</label>
+          <input type="date" class="w-full h-16 rounded-[10px] border border-stone-400 px-4 text-2xl" />
+        </div>
+
+  <!-- Hora -->
+      <div class="w-[48%]">
+        <label class="block text-black text-3xl mb-2 font-['Fredoka_One']">Hora de la cita</label>
+        <input type="time" class="w-full h-16 rounded-[10px] border border-stone-400 px-4 text-2xl" />
+      </div>
+
+      <!-- Especialidad -->
+      <label class="block text-black text-3xl mb-2 font-['Fredoka_One']">Seleccionar Especialidad</label>
+      <select class="w-full h-16 rounded-[10px] border border-stone-400 px-4 text-2xl mb-4">
+        <option value="">-- Seleccione una especialidad --</option>
+        <option value="cardiologia">Cardiología</option>
+        <option value="neurologia">Neurología</option>
+        <option value="pediatria">Pediatría</option>
+        <option value="ginecología">Ginecología</option>
+        <option value="dermatologia">Dermatología</option>
+        <option value="geriatria">Geriatría</option>
+      </select>
+  
+      <!-- Médico -->
+      <label class="block text-black text-3xl mb-2 font-['Fredoka_One']">Seleccionar Médico</label>
+      <select class="w-full h-16 rounded-[10px] border border-stone-400 px-4 text-2xl mb-6">
+        <option value="">-- Seleccione un médico --</option>
+        <option value="dr_camilo">Dr. Camilo Soto</option>
+        <option value="dra_paula">Dra. Paula Díaz</option>
+        <option value="dr_juan">Dr. Juan Pérez</option>
+      </select>
+  
+      <button class="w-full h-16 md:h-20 bg-amber-400 rounded-[20px] text-white text-2xl md:text-4xl font-['Fredoka_One'] hover:bg-amber-500 transition-colors duration-300">
+        SOLICITAR CITA
+      </button>
+  
+    </div>
+  </div>
+  
