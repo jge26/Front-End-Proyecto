@@ -54,7 +54,6 @@ export class MedicAvailabilityComponent {
       }
     }
 
-    // Simula una hora ocupada como ejemplo
     this.availability['Lun-10:00'] = { status: 'occupied', patient: 'Julio Pérez' };
   }
 
@@ -75,11 +74,9 @@ export class MedicAvailabilityComponent {
     const current = this.availability[key];
 
     if (!current || current.status === 'occupied') {
-      // No permitir cambios en celdas ocupadas
       return;
     }
 
-    // Alternar entre disponible y bloqueado
     if (current.status === 'available') {
       this.availability[key] = { status: 'blocked', patient: null };
     } else if (current.status === 'blocked') {
@@ -105,6 +102,6 @@ saveSchedule() {
   this.showSuccessMessage = true;
   setTimeout(() => {
     this.showSuccessMessage = false;
-  }, 3000); // <-- desaparece en 3 segundos
+  }, 3000); 
 }
 }

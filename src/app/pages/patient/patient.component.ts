@@ -13,10 +13,9 @@ export class PatientComponent {
 
   constructor(private router: Router) {}
 
-  // <-- Cierra la sesión del paciente y redirige al login -->
-  logout() {
-    localStorage.clear();   
-    sessionStorage.clear();  
-    this.router.navigate(['/login']);  
+  // <-- Metodo para cerrar sesion -->
+  cerrarSesion(): void {
+    localStorage.removeItem('token');
+    this.router.navigate(['/home']);
   }
 }
