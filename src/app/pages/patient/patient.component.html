@@ -37,9 +37,12 @@
             </a>
           </li>
         </ul>
-        <!-- Botón “Cerrar Sesión” -->
-        <button class="ml-auto sm:ml-4 bg-amber-400 hover:bg-blue-800 text-black hover:text-white px-6 py-2 rounded-lg font-['Fredoka_One'] transition-colors">
-            Cerrar Sesión
+        <!-- Botón cerrar sesión -->
+        <button
+          (click)="logout()"
+          class="bg-[#FFBF69] text-black font-bold px-6 py-2 rounded hover:bg-yellow-300 transition"
+        >
+          Cerrar Sesión
         </button>
       </div>
     </nav>

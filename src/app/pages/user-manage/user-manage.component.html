@@ -4,7 +4,7 @@
   <aside class="w-1/6 bg-white shadow-md p-6 flex flex-col">
     <!-- Clínica Logo -->
     <div class="flex justify-center mb-8">
-      <a [routerLink]="['/home']">
+      <a [routerLink]="['/admin']">
         <img
           src="assets/img/Logo.png"
           alt="Logo Clínica"
@@ -29,7 +29,7 @@
       </button>
     </nav>
 
-    <!-- Nombre de usuario logeado -->
+    <!-- Apellido de usuario logeado -->
     <div class="mt-auto text-center pt-6">
       <p class="font-semibold text-gray-700">
         Bienvenido, Dr. {{ currentUserLastname }}
@@ -70,15 +70,12 @@
               <tr *ngFor="let u of users">
                 <!-- Nombre editable -->
                 <td class="px-6 py-4">
-                  <ng-container *ngIf="u.editing; else showName">
-                    <input
-                      type="text"
-                      [(ngModel)]="u.name"
-                      name="name-{{u.id}}"
-                      class="w-full border rounded px-2 py-1"
-                    />
-                  </ng-container>
-                  <ng-template #showName>{{ u.name }}</ng-template>
+                  <input
+                    *ngIf="u.editing"
+                    [(ngModel)]="u.name"
+                    class="border border-gray-300 px-2 py-1 rounded w-full"
+                  />
+                  <span *ngIf="!u.editing">{{ u.name }}</span>
                 </td>
 
                 <!-- Apellidos (no editable) -->
@@ -89,72 +86,69 @@
 
                 <!-- Teléfono editable -->
                 <td class="px-6 py-4">
-                  <ng-container *ngIf="u.editing; else showPhone">
-                    <input
-                      type="tel"
-                      [(ngModel)]="u.phone"
-                      name="phone-{{u.id}}"
-                      class="w-full border rounded px-2 py-1"
-                    />
-                  </ng-container>
-                  <ng-template #showPhone>{{ u.phone }}</ng-template>
+                  <input
+                    *ngIf="u.editing"
+                    [(ngModel)]="u.phone"
+                    class="border border-gray-300 px-2 py-1 rounded w-full"
+                  />
+                  <span *ngIf="!u.editing">{{ u.phone }}</span>
                 </td>
 
                 <!-- Correo editable -->
                 <td class="px-6 py-4">
-                  <ng-container *ngIf="u.editing; else showEmail">
-                    <input
-                      type="email"
-                      [(ngModel)]="u.email"
-                      name="email-{{u.id}}"
-                      class="w-full border rounded px-2 py-1"
-                    />
-                  </ng-container>
-                  <ng-template #showEmail>{{ u.email }}</ng-template>
+                  <input
+                    *ngIf="u.editing"
+                    [(ngModel)]="u.email"
+                    class="border border-gray-300 px-2 py-1 rounded w-full"
+                  />
+                  <span *ngIf="!u.editing">{{ u.email }}</span>
                 </td>
 
-                <!-- Estado (interruptor) -->
-                <td class="px-6 py-4 text-center">
-                  <div
-                    (click)="toggleActive(u)"
-                    role="switch"
-                    [attr.aria-checked]="u.is_active"
-                    class="cursor-pointer relative inline-block w-14 h-7 rounded-full transition-colors duration-200"
-                    [ngClass]="u.is_active ? 'bg-green-500' : 'bg-red-500'"
-                  >
-                    <span
-                      class="absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full shadow transition-transform duration-200"
-                      [ngClass]="u.is_active ? 'translate-x-7' : 'translate-x-0'"
-                    ></span>
-                  </div>
-                </td>
+                <!-- Switch habilitado/deshabilitado -->
+                  <td class="px-6 py-4 text-center">
+                    <label class="relative inline-block w-12 h-6">
+                      <input type="checkbox"
+                          class="sr-only peer"
+                          [checked]="u.enabled === 1"
+                          (change)="toggleStatus(u)"
+                          [disabled]="!u.editing" 
+                      />
+                      <div class="w-full h-full bg-red-500 rounded-full peer-checked:bg-green-500 transition-colors duration-300"></div>
+                      <div class="absolute left-0.5 top-0.5 bg-white w-5 h-5 rounded-full transition-all duration-300 peer-checked:translate-x-6"></div>
+                    </label>
+                  </td>
 
-                <!-- Acciones: Editar / Guardar / Cancelar -->
-                <td class="px-6 py-4 text-center space-x-2">
-                  <button
-                    *ngIf="!u.editing"
-                    (click)="u.editing = true"
-                    class="px-3 py-1 bg-[#2EC4B6] text-white rounded hover:bg-[#3fcfbe] transition"
-                  >
-                    Editar
-                  </button>
-                  <button
-                    *ngIf="u.editing"
-                    (click)="save(u)"
-                    class="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 transition"
-                  >
-                    Guardar
-                  </button>
-                  <button
-                    *ngIf="u.editing"
-                    (click)="u.editing = false"
-                    class="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 transition"
-                  >
-                    Cancelar
-                  </button>
-                </td>
-              </tr>
-            </tbody>
+                  <!-- Botones de acción -->
+                  <td class="px-6 py-4 text-center">
+                    <!-- Modo normal -->
+                    <ng-container *ngIf="!u.editing">
+                      <button
+                        (click)="startEdit(u)"
+                        class="bg-teal-400 text-white px-4 py-1 rounded-lg shadow hover:bg-teal-500 transition"
+                      >
+                        Editar
+                      </button>
+                    </ng-container>
+
+                    <!-- Modo edición -->
+                    <ng-container *ngIf="u.editing">
+                      <button
+                        (click)="save(u)"
+                        class="bg-green-500 text-white px-4 py-1 rounded-lg shadow hover:bg-green-600 transition mr-2"
+                      >
+                        Guardar
+                      </button>
+                      <button
+                        (click)="cancelEdit(u)"
+                        class="bg-red-500 text-white px-4 py-1 rounded-lg shadow hover:bg-red-600 transition"
+                      >
+                        Cancelar
+                      </button>
+                    </ng-container>
+                  </td>
+                </tr>
+              </tbody>
+
           </table>
         </div>
       </ng-container>
