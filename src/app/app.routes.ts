@@ -13,6 +13,7 @@ import { UserManageComponent } from './pages/user-manage/user-manage.component';
 import { MedicAvailabilityComponent } from './pages/medic-availability/medic-availability.component';
 import { adminGuard } from './guards/admin.guard';
 import { medicGuard } from './guards/medic.guard';
+import { AppointmentComponent } from './pages/appointment/appointment.component';
 
 export const routes: Routes = [
     {
@@ -67,6 +68,10 @@ export const routes: Routes = [
         path: 'medic-availability',
          component: MedicAvailabilityComponent,
         canActivate: [medicGuard]
+    },
+    { 
+        path: 'appointment',
+         component: AppointmentComponent,
     },
     {     
         path: '**',

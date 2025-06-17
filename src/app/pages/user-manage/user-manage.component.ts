@@ -2,17 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { UserService, User as BaseUser } from '../../services/user.service';
-
-// <-- Modelo extendido con campos locales para edición -->
-interface User extends BaseUser {
-  editing?: boolean;
-  backup?: {
-    name: string;
-    phone: string;
-    email: string;
-  };
-}
+import { UserService } from '../../services/user.service';
+import { UserManage } from '../../models/user.model';
 
 @Component({
   selector: 'app-user-manage',
@@ -24,7 +15,7 @@ interface User extends BaseUser {
 export class UserManageComponent implements OnInit {
 
   // <-- Lista de usuarios cargada desde el backend -->
-  users: User[] = [];
+  users: UserManage[] = [];
 
   // <-- Apellido del usuario logeado extraído del token -->
   public currentUserLastname: string = '';
@@ -35,9 +26,8 @@ export class UserManageComponent implements OnInit {
   ngOnInit() {
     this.loadCurrentUserLastname();
 
-    this.userService.getAllUsers().subscribe({
-      next: (data) => this.users = data,
-      error: (err) => console.error('Error al obtener usuarios:', err)
+    this.userService.getAllUsers().subscribe(response => {
+      this.users = response.data;
     });
   }
 
@@ -54,49 +44,59 @@ export class UserManageComponent implements OnInit {
     }
   }
 
-  // <-- Activar o desactivar cuenta de usuario -->
-  toggleActive(u: User) {
-    u.is_active = !u.is_active;
-    this.userService.toggleStatus(u.id, u.is_active).subscribe({
-      next: () => console.log(`Usuario ${u.name} actualizado.`),
-      error: () => console.error('Error al cambiar el estado del usuario')
+  // <-- Entrar en modo edición -->
+  startEdit(user: UserManage) {
+    user.backup = {
+      name: user.name,
+      phone: user.phone,
+      email: user.email
+    };
+    user.editing = true;
+  }
+
+  // <-- Cancelar edición y restaurar datos -->
+  cancelEdit(user: UserManage) {
+    if (user.backup) {
+      user.name = user.backup.name;
+      user.phone = user.backup.phone;
+      user.email = user.backup.email;
+    }
+    user.editing = false;
+  }
+
+  // <-- Guardar cambios -->
+  save(user: UserManage) {
+    const payload = {
+      id: user.id,
+      name: user.name,
+      phone: user.phone,
+      email: user.email
+    };
+
+    this.userService.updateUser(payload).subscribe({
+      next: () => {
+        user.editing = false;
+        delete user.backup;
+        alert('Usuario actualizado correctamente.');
+      },
+      error: () => {
+        alert('Error al guardar los cambios.');
+      }
     });
   }
 
-  // <-- Entrar en modo edición -->
-  startEdit(u: User) {
-    u.backup = {
-      name: u.name,
-      phone: u.phone,
-      email: u.email
-    };
-    u.editing = true;
-  }
+  // <-- Cambiar estado habilitado/deshabilitado -->
+  toggleStatus(user: UserManage) {
+    const newStatus = user.enabled ? 0 : 1;
 
-  // <-- Cancelar edición y restaurar los datos -->
-  cancelEdit(u: User) {
-    if (u.backup) {
-      u.name = u.backup.name;
-      u.phone = u.backup.phone;
-      u.email = u.backup.email;
-    }
-    u.editing = false;
-  }
-
-  // <-- Guardar cambios de usuario editado -->
-  save(u: User) {
-    this.userService.updateUser({
-      id: u.id,
-      name: u.name,
-      phone: u.phone,
-      email: u.email
-    }).subscribe({
+    this.userService.toggleStatus(user.rut, newStatus).subscribe({
       next: () => {
-        u.editing = false;
-        delete u.backup;
-        alert('Usuario actualizado correctamente.');
+        user.enabled = newStatus;
+        console.log(`Estado actualizado a ${newStatus}`);
       },
-      error: () => alert('Error al guardar los cambios del usuario.')
+      error: () => {
+        alert('Error al actualizar estado');
+      }
     });
   }
 }

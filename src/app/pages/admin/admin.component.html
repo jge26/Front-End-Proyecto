@@ -17,7 +17,7 @@
             <nav class="space-y-4">
               <!-- Registrar Médico -->
               <button
-                routerLink="/registrar-medico"
+                routerLink="/MedicRegister"
                 class="block w-full mx-auto bg-teal-400 rounded-[20px]
                      py-4 text-center font-['Fredoka_One'] text-black text-2xl
                      hover:text-white transition-colors duration-300"
@@ -27,7 +27,7 @@
   
               <!-- Gestionar Usuarios (activo) -->
               <button
-                routerLink="/gestionar-usuarios"
+                routerLink="/user-manage"
                 class="block w-full mx-auto bg-teal-400 rounded-[20px]
                        py-4 text-center font-['Fredoka_One'] text-black text-2xl
                        hover:text-white transition-colors duration-300"
@@ -50,9 +50,7 @@
           <!-- Cerrar sesión -->
           <button
             (click)="cerrarSesion()"
-            class="block w-4/5 mx-auto bg-amber-400 rounded-[20px]
-                   py-4 my-4 font-['Fredoka_One'] text-black text-2xl
-                   hover:bg-blue-800 hover:text-white transition-colors duration-300"
+            class="block w-4/5 mx-auto bg-amber-400 rounded-[20px] py-4 my-4 font-['Fredoka_One'] text-black text-2xl hover:bg-blue-800 hover:text-white transition-colors duration-300"
           >
             Cerrar Sesión
           </button>

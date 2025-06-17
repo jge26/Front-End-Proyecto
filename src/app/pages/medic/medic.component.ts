@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-medic',
@@ -9,5 +9,13 @@ import { RouterModule } from '@angular/router';
   styleUrl: './medic.component.css'
 })
 export class MedicComponent {
+
+  constructor(private router: Router) {}
+  
+  // <-- Metodo para cerrar sesion -->
+  cerrarSesion(): void {
+    localStorage.removeItem('token');
+    this.router.navigate(['/home']);
+  }
 
 }

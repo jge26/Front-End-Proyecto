@@ -12,8 +12,9 @@ import { Router, RouterModule } from '@angular/router';
 export class AdminComponent {
   constructor(private router: Router) {}
 
+  // <-- Metodo para cerrar sesion -->
   cerrarSesion(): void {
-    localStorage.removeItem('token'); // Borra el token
-    this.router.navigate(['/home']);  // Redirige al home
+    localStorage.removeItem('token');
+    this.router.navigate(['/home']);
   }
 }

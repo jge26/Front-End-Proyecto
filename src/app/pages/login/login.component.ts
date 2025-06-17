@@ -50,6 +50,7 @@ export class LoginComponent {
           const roleId = data.data.user.role_id;
 
           localStorage.setItem('token', token);
+          localStorage.setItem('role_id', roleId.toString());
 
           // <-- Redirige al usuario según su rol -->
           switch (roleId) {
@@ -62,7 +63,9 @@ export class LoginComponent {
             case 3:
               this.router.navigate(['/medic']);
               break;
+              
             default:
+              console.warn('Rol desconocido:', roleId);
               this.router.navigate(['/home']);
           }
         } else {

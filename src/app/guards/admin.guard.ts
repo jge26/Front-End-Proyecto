@@ -4,28 +4,18 @@ import { inject } from '@angular/core';
 export const adminGuard: CanActivateFn = () => {
   const router = inject(Router);
 
-  // <-- Obtener el token -->
+  // <-- Obtener el token desde localStorage -->
   const token = localStorage.getItem('token');
-  const roleId = getRoleIdFromToken(token);
 
-  // <-- Permitir solo si el rol es administrador -->
+  // <-- Obtener el role_id almacenado tras el login -->
+  const roleId = Number(localStorage.getItem('role_id'));
+
+  // <-- Permitir acceso solo si existe token y el rol es administrador -->
   if (token && roleId === 1) {
     return true;
   }
 
-  // <-- Redirigir si no es admin -->
+  // <-- Redirigir al home si no es administrador o no hay token -->
   router.navigate(['/home']);
   return false;
 };
-
-// <-- Función para decodificar el JWT y extraer el role_id -->
-function getRoleIdFromToken(token: string | null): number {
-  if (!token) return -1;
-
-  try {
-    const payload = JSON.parse(atob(token.split('.')[1]));
-    return payload.role_id;
-  } catch {
-    return -1;
-  }
-}
