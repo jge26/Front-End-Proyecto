@@ -8,6 +8,7 @@ import { MedicRegisterComponent } from './pages/medic-register/medic-register.co
 import { LoginComponent } from './pages/login/login.component';
 import { ForgotPasswordComponent } from './pages/forgot-password/forgot-password.component';
 import { ResetPasswordComponent } from './pages/reset-password/reset-password.component';
+import { AppointmentComponent } from './pages/appointment/appointment.component';
 import { UserManageComponent } from './pages/user-manage/user-manage.component';
 import { MedicAvailabilityComponent } from './pages/medic-availability/medic-availability.component';
 import { adminGuard } from './guards/admin.guard';
@@ -37,6 +38,10 @@ export const routes: Routes = [
         path: 'login',
         component: LoginComponent,
     },
+    {
+      path: 'appointment',
+      component: AppointmentComponent,
+  },
     {
         path: 'UserRegister',
         component: UserRegisterComponent,
