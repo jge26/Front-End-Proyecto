@@ -9,10 +9,13 @@ import { LoginComponent } from './pages/login/login.component';
 import { ForgotPasswordComponent } from './pages/forgot-password/forgot-password.component';
 import { ResetPasswordComponent } from './pages/reset-password/reset-password.component';
 import { AppointmentComponent } from './pages/appointment/appointment.component';
+import { DateComponent } from './pages/date/date.component';
+import { PaymentMethodComponent } from './pages/payment-method/payment-method.component';
 import { UserManageComponent } from './pages/user-manage/user-manage.component';
 import { MedicAvailabilityComponent } from './pages/medic-availability/medic-availability.component';
 import { adminGuard } from './guards/admin.guard';
 import { medicGuard } from './guards/medic.guard';
+
 
 export const routes: Routes = [
     {
@@ -40,7 +43,15 @@ export const routes: Routes = [
     {
       path: 'appointment',
       component: AppointmentComponent,
-  },
+    },
+    {
+      path: 'date',
+      component: DateComponent,
+    },
+    {
+      path: 'payment-method',
+      component: PaymentMethodComponent,
+    },
     {
         path: 'UserRegister',
         component: UserRegisterComponent,
