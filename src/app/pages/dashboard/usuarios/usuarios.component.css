@@ -1,0 +1,77 @@
+/* Estilo para el toggle switch */
+.toggle-checkbox:checked {
+  right: 0;
+  border-color: #fff;
+}
+
+.toggle-checkbox:checked + .toggle-label {
+  background-color: #2EC4B6;
+}
+
+.toggle-checkbox {
+  right: 0;
+  z-index: 1;
+  border-color: #2EC4B6;
+  transition: all 0.3s;
+}
+
+.toggle-label {
+  transition: all 0.3s;
+  display: block;
+}
+
+/* Hover effects */
+.toggle-checkbox:hover {
+  box-shadow: 0 0 0 2px rgba(46, 196, 182, 0.2);
+}
+
+/* Estilos actualizados para el nuevo toggle accesible */
+button[aria-pressed] {
+  transition: background-color 0.3s;
+}
+
+button[aria-pressed="true"] {
+  background-color: #2EC4B6;
+}
+
+button[aria-pressed="false"] {
+  background-color: #d1d5db;
+}
+
+button[aria-pressed]:focus {
+  outline: 2px solid #2EC4B6;
+  outline-offset: 2px;
+}
+
+/* Animación para la bola del toggle */
+button[aria-pressed] span {
+  transition: transform 0.2s ease-in-out;
+}
+
+/* Animaciones */
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(46, 196, 182, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(46, 196, 182, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(46, 196, 182, 0);
+  }
+}
+
+button[aria-pressed="true"] span {
+  animation: pulse 1s;
+}
+
+/* Estilo para el texto de estado */
+.status-active {
+  background-color: rgba(46, 196, 182, 0.2);
+  color: #2EC4B6;
+}
+
+.status-inactive {
+  background-color: rgba(239, 68, 68, 0.2);
+  color: #EF4444;
+}

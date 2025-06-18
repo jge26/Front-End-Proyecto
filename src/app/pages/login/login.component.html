@@ -1,90 +1,139 @@
-<section class="flex flex-col items-center justify-center px-6 py-8 min-h-screen pt-10">
-
-  <!-- Logo -->
-  <div class="mb-6 flex justify-center">
-    <a [routerLink]="['/']">
-      <img src="assets/img/Logo.png" alt="Logo" class="h-40 w-auto cursor-pointer hover:opacity-80 transition" />
-    </a>
-  </div>
-
-  <!-- Contenedor -->
-  <div class="w-full max-w-sm bg-teal-500 rounded-lg shadow-xl shadow-black/20 overflow-hidden">
-
-    <!-- Título -->
-    <div class="bg-[#ffbf69] py-3">
-      <h2 class="text-3xl font-bold text-center">INICIAR SESIÓN</h2>
-    </div>
-
-    <!-- Formulario -->
-    <div class="p-6 space-y-4">
-
-    <!-- <-- Mensaje de error si el login falla --> 
-    <div
-      *ngIf="loginError"
-      [ngClass]="{ 'shake': triggerShake }"
-      class="bg-red-100 text-red-700 px-4 py-3 rounded text-center text-sm font-semibold">
-      {{ loginError }}
-    </div>
-
-      <!-- Formulario de acceso -->
-      <form [formGroup]="formLogin" class="space-y-4" (ngSubmit)="login()">
-
-        <!-- Email -->
-        <div class="flex h-12 overflow-hidden rounded">
-          <div class="bg-[#ffbf69] w-12 flex items-center justify-center">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+<section class="min-h-screen bg-gradient-to-r from-[#CBF3F0]/30 to-[#CBF3F0]/10 py-12 px-4">
+  <div class="flex flex-col items-center justify-center mx-auto md:h-screen">
+        <!-- Botón para volver al inicio -->
+        <div class="absolute top-6 left-6">
+          <a
+            href="/"
+            class="flex items-center gap-2 px-4 py-2 bg-white rounded-full shadow hover:shadow-md transition-all duration-200 text-gray-700 font-medium group"
+          >
+            <svg class="w-5 h-5 text-[#2EC4B6] transform transition-transform group-hover:-translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
             </svg>
-          </div>
-          <input
-            type="email"
-            formControlName="email"
-            placeholder="CORREO ELECTRÓNICO"
-            class="flex-1 p-2 font-bold text-black outline-none"
-            required
-          />
+            Volver al inicio
+          </a>
         </div>
+<!-- Logo sin texto -->
+<div class="flex justify-center mb-8">
+  <div class="relative w-20 h-20 rounded-lg overflow-hidden">
+    <img
+      [src]="'assets/app/images/SaludYa - Logo.png'"
+      alt="Salud Ya"
+      class="w-full h-full object-cover"
+    >
+  </div>
+</div>
 
-        <!-- Password -->
-        <div class="flex flex-col">
-          <div class="flex h-12 overflow-hidden rounded">
-            <div class="bg-[#ffbf69] w-12 flex items-center justify-center">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M12 15v2m4-10V7a4 4 0 00-8 0v2m-2 0h12a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2v-6a2 2 0 012-2z" />
-              </svg>
-            </div>
-            <input
-              type="password"
-              formControlName="password"
-              placeholder="CONTRASEÑA"
-              class="flex-1 p-2 font-bold text-black outline-none"
-              required
-            />
-          </div>
-
-          <!-- Enlace recuperar contraseña -->
-          <small class="text-xs mt-1 ml-1">
-            <a routerLink="/forgot-password" class="text-white font-bold underline hover:text-yellow-200 cursor-pointer">
-              ¿OLVIDASTE TU CONTRASEÑA?
-            </a>
-          </small>
-        </div>
-
-        <!-- Botón -->
-        <div class="text-center">
-          <button type="submit" class="bg-[#ffbf69] text-black font-bold px-6 py-2 rounded hover:bg-yellow-300 transition">
-            INICIAR SESIÓN
-          </button>
-        </div>
-      </form>
-
-      <!-- Registro -->
-      <div class="text-center text-black font-bold pt-3">
-        <p>¿NO TIENES UNA CUENTA?</p>
-        <a routerLink="/UserRegister" class="text-white font-bold underline">REGISTRARSE</a>
+    <!-- Tarjeta de login -->
+    <div class="w-full max-w-md bg-white rounded-2xl shadow-lg overflow-hidden">
+      <!-- Cabecera -->
+      <div class="bg-[#2EC4B6] py-6 px-8 text-white">
+        <h1 class="text-2xl font-bold">INICIAR SESIÓN</h1>
+        <p class="text-sm mt-2 opacity-90">Accede a tu cuenta para gestionar tus citas médicas</p>
       </div>
+
+      <!-- Cuerpo del formulario -->
+      <div class="p-8">
+        <!-- Mensaje de error -->
+        <div *ngIf="errorMessage"
+             class="p-4 mb-6 text-sm text-red-800 rounded-lg bg-red-50 border border-red-200"
+             role="alert"
+             [innerHTML]="errorMessage">
+        </div>
+
+        <!-- Spinner de carga -->
+        <div *ngIf="loading" class="flex justify-center mb-6">
+          <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-[#2EC4B6]"></div>
+        </div>
+
+        <form [formGroup]="formLogin" (ngSubmit)="iniciarSesion()" class="space-y-6">
+          <!-- Campo Email -->
+          <div class="form-field">
+            <div class="input-with-icon">
+              <input type="email"
+                     formControlName="email"
+                     id="email"
+                     class="input-field"
+                     [ngClass]="{'input-error': campoNoValido('email')}"
+                     placeholder="CORREO ELECTRÓNICO"
+                     required>
+              <div class="field-icon">
+                <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                </svg>
+              </div>
+            </div>
+            <p *ngIf="campoNoValido('email')" class="error-message">
+              {{ getMensajeError('email') }}
+            </p>
+          </div>
+
+          <!-- Campo Password -->
+          <div class="form-field">
+            <div class="input-with-icon">
+              <input type="password"
+                     formControlName="password"
+                     id="password"
+                     class="input-field"
+                     [ngClass]="{'input-error': campoNoValido('password')}"
+                     placeholder="CONTRASEÑA"
+                     required>
+              <div class="field-icon">
+                <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                </svg>
+              </div>
+            </div>
+            <p *ngIf="campoNoValido('password')" class="error-message">
+              {{ getMensajeError('password') }}
+            </p>
+          </div>
+
+          <div class="pt-2">
+            <p class="text-right mb-4">
+              <a href="#" class="text-[#2EC4B6] hover:text-[#25A99D] text-sm font-medium">¿Olvidaste tu contraseña?</a>
+            </p>
+
+            <!-- Botón de inicio de sesión -->
+            <button type="submit"
+                    [disabled]="loading"
+                    class="w-full py-4 px-6 bg-[#2EC4B6] hover:bg-[#25A99D] text-white rounded-lg font-bold text-base shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center"
+                    [ngClass]="{'opacity-70': loading}">
+              <span *ngIf="!loading">INICIAR SESIÓN</span>
+              <span *ngIf="loading" class="flex items-center">
+                <svg class="animate-spin -ml-1 mr-2 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                PROCESANDO...
+              </span>
+            </button>
+          </div>
+
+          <!-- Separador -->
+          <div class="flex items-center my-4">
+            <hr class="flex-grow border-t border-gray-300">
+            <span class="px-4 text-gray-500 text-sm">¿NO TIENES UNA CUENTA?</span>
+            <hr class="flex-grow border-t border-gray-300">
+          </div>
+
+          <!-- Botón de registro -->
+          <button
+            type="button"
+            (click)="registrarse()"
+            class="w-full py-4 px-6 bg-[#FF9F1C] hover:bg-[#F08C00] text-white rounded-lg font-bold text-base shadow-md hover:shadow-lg transition-all duration-300">
+            REGÍSTRATE
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="mt-8 text-center text-gray-600 text-sm">
+      <p>&copy; 2025 Salud Ya. Todos los derechos reservados.</p>
+      <p class="mt-2">
+        <a href="#" class="text-[#2EC4B6] hover:underline mx-2">Políticas de privacidad</a>
+        <a href="#" class="text-[#2EC4B6] hover:underline mx-2">Términos de uso</a>
+      </p>
     </div>
   </div>
 </section>

@@ -1,23 +1,4 @@
-.card-container {
-     display: flex;
-     justify-content: center;/* Centrar horizontalmente */
-
-     align-items: center; /* Centrar verticalmente */
-
-     margin-top: 100px;
-}
-
-
-.form-custom {
-     min-width: 150px;
-     width: 100%;
-}
-
-.input-custom {
-     width: 100%;
-}
-
-/* Estilos específicos para la página de login */
+/* Estilos específicos para la página de registro */
 
 /* Estructura principal de los campos de formulario */
 .form-field {
@@ -113,79 +94,16 @@
   animation: shake 0.82s cubic-bezier(.36,.07,.19,.97) both;
 }
 
+/* Media queries para responsividad */
+@media (max-width: 768px) {
+  .input-field {
+    height: 3.25rem;
+    font-size: 0.95rem;
+  }
+}
+
 /* Placeholder con color más tenue */
 .input-field::placeholder {
   color: #a0aec0;
   opacity: 0.7;
-}
-
-/* Efecto de destello en el logo */
-@keyframes pulse-border {
-  0% {
-    box-shadow: 0 0 0 0 rgba(45, 212, 191, 0.7);
-  }
-  70% {
-    box-shadow: 0 0 0 10px rgba(45, 212, 191, 0);
-  }
-  100% {
-    box-shadow: 0 0 0 0 rgba(45, 212, 191, 0);
-  }
-}
-
-.logo-pulse {
-  animation: pulse-border 2s infinite;
-}
-
-/* Efecto de elevación suave para la tarjeta */
-.card-elevation {
-  transition: transform 0.3s, box-shadow 0.3s;
-}
-
-.card-elevation:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-}
-
-/* Fondo con patrón sutil */
-.bg-pattern {
-  background-color: #f9fafb;
-  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2399f6e4' fill-opacity='0.2'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-}
-
-/* Animación de entrada para los elementos del formulario */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translate3d(0, 20px, 0);
-  }
-  to {
-    opacity: 1;
-    transform: translate3d(0, 0, 0);
-  }
-}
-
-.form-group {
-  animation: fadeInUp 0.6s ease-out forwards;
-}
-
-.form-group:nth-child(1) {
-  animation-delay: 0.1s;
-}
-
-.form-group:nth-child(2) {
-  animation-delay: 0.2s;
-}
-
-.btn-login {
-  animation-delay: 0.3s;
-}
-
-.btn-register {
-  animation-delay: 0.4s;
-}
-
-/* Mejoras en los inputs al enfocar */
-input:focus {
-  border-color: #2dd4bf;
-  box-shadow: 0 0 0 2px rgba(45, 212, 191, 0.2);
 }

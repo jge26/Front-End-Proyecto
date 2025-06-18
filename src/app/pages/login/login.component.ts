@@ -1,102 +1,171 @@
-import { Component, inject } from '@angular/core';
-import { AccesoService } from '../../services/acceso.service';
-import { Router, RouterModule } from '@angular/router';
+import { Component, OnInit, inject } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Login } from '../../interfaces/Login';
-import { ResponseAcceso } from '../../interfaces/RespondeAcceso';
+import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { AccesoService } from '../../services/acceso.service';
+import { AuthService } from '../../services/auth.service';
+import { trigger, transition, style, animate } from '@angular/animations';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule,RouterModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './login.component.html',
-  styleUrl: './login.component.css'
+  styleUrls: ['./login.component.css'],
+  animations: [
+    trigger('fadeIn', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'translateY(10px)' }),
+        animate('0.3s ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
+      ])
+    ])
+  ]
 })
-export class LoginComponent {
-
-  // <-- Inyecta el servicio de acceso, el router y el constructor de formularios -->
-  private AccesoService = inject(AccesoService);
+export class LoginComponent implements OnInit {
+  private fb = inject(FormBuilder);
+  private accesoService = inject(AccesoService);
+  private authService = inject(AuthService);
   private router = inject(Router);
-  public formBuild = inject(FormBuilder);
 
-  // <-- Define el formulario reactivo con campos requeridos -->
-  public formLogin: FormGroup = this.formBuild.group({
-    email: ['', Validators.required],
-    password: ['', Validators.required]
-  });
+  formLogin!: FormGroup;
+  errorMessage: string = '';
+  loading: boolean = false;
+  submitted: boolean = false;
 
-  // <-- Mensaje de error personalizado si falla el login -->
-  public loginError: string = '';
+  constructor() {
+    this.formLogin = this.fb.group({
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', Validators.required]
+    });
+  }
 
-  // <-- Controla si debe activarse la animación de sacudida -->
-  public triggerShake: boolean = false;
+  ngOnInit() {
+    console.log('Inicializando componente Login');
 
-  // <-- Envía los datos al backend y redirige según el rol -->
-  login() {
-    if (this.formLogin.invalid) return;
+    // Verificar si hay un mensaje de error guardado en sessionStorage
+    const savedError = sessionStorage.getItem('authError');
+    if (savedError) {
+      this.errorMessage = `<div class="flex items-center">
+        <svg class="w-5 h-5 mr-2 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zm-1 9a1 1 0 01-1-1v-4a1 1 0 112 0v4a1 1 0 01-1 1z" clip-rule="evenodd"></path>
+        </svg>
+        <span class="font-medium">${savedError}</span>
+      </div>`;
+      sessionStorage.removeItem('authError');
+    }
 
-    const objeto: Login = {
+    // Si el usuario ya está autenticado, redirigir según su rol
+    if (this.authService.isLoggedIn()) {
+      console.log('Usuario ya autenticado, redirigiendo...');
+
+      if (this.authService.hasDashboardAccess()) {
+        console.log('Usuario con acceso al dashboard, redirigiendo a /dashboard');
+        this.router.navigate(['/dashboard']);
+      } else {
+        console.log('Usuario sin acceso al dashboard, redirigiendo a /');
+        this.router.navigate(['/']);
+      }
+    } else {
+      console.log('Usuario no autenticado, mostrando formulario de login');
+    }
+  }
+
+  // Método para verificar si un campo no es válido
+  campoNoValido(campo: string): boolean {
+    return Boolean(this.formLogin.get(campo)?.invalid && (this.formLogin.get(campo)?.touched || this.submitted));
+  }
+
+  // Método para obtener mensajes de error
+  getMensajeError(campo: string): string {
+    if (!this.formLogin.get(campo)) return '';
+
+    const errors = this.formLogin.get(campo)?.errors;
+    if (!errors) return '';
+
+    if (errors['required']) {
+      return 'Este campo es obligatorio';
+    } else if (errors['email']) {
+      return 'Debe ser un email válido';
+    }
+    return '';
+  }
+
+  iniciarSesion() {
+    console.log('Iniciando proceso de login');
+    this.submitted = true;
+    this.errorMessage = '';
+
+    if (this.formLogin.invalid) {
+      console.log('Formulario inválido, deteniendo login');
+
+      // Agregar una clase para mostrar animación de error
+      document.querySelectorAll('.input-error').forEach(el => {
+        el.classList.add('error-shake');
+        setTimeout(() => {
+          el.classList.remove('error-shake');
+        }, 820);
+      });
+
+      return;
+    }
+
+    this.loading = true;
+
+    const loginData = {
       email: this.formLogin.value.email,
       password: this.formLogin.value.password
     };
 
-    console.log(objeto);
+    console.log('Enviando solicitud de login para:', loginData.email);
 
-    this.AccesoService.login(objeto).subscribe({
-      next: (data: ResponseAcceso) => {
-        if (data.status === 'success') {
-          const token = data.data.token;
-          const roleId = data.data.user.role_id;
+    this.accesoService.login(loginData).subscribe({
+      next: (response) => {
+        console.log('Respuesta de login exitosa:', response);
 
-          localStorage.setItem('token', token);
-          localStorage.setItem('role_id', roleId.toString());
+        // Redireccionar según el rol del usuario
+        const userRole = response.data?.user?.role_id;
+        console.log('Rol del usuario:', userRole);
 
-          // <-- Redirige al usuario según su rol -->
-          switch (roleId) {
-            case 1:
-              this.router.navigate(['/admin']);
-              break;
-            case 2:
-              this.router.navigate(['/patient']);
-              break;
-            case 3:
-              this.router.navigate(['/medic']);
-              break;
-              
-            default:
-              console.warn('Rol desconocido:', roleId);
-              this.router.navigate(['/home']);
-          }
+        if (userRole === 1 || userRole === 2) { // Admin o Doctor
+          console.log('Redirigiendo a dashboard...');
+          this.router.navigate(['/dashboard']);
         } else {
-          this.loginError = 'Error al iniciar sesión. Verifique sus credenciales.';
+          console.log('Redirigiendo a home...');
+          this.router.navigate(['/']);
         }
+
+        this.loading = false;
       },
       error: (error) => {
-        console.error('Error al iniciar sesión', error);
+        console.error('Error en login:', error);
 
-        // <-- Ocultar mensaje y quitar clase shake temporalmente -->
-        this.loginError = '';
-        this.triggerShake = false;
-
-        // <-- Esperar un momento antes de volver a mostrar y animar -->
-        setTimeout(() => {
-          this.triggerShake = true;
-
-          // <-- Mostrar mensaje según tipo de error -->
-          if (error.error?.status === 'disabled') {
-            this.loginError = 'Su cuenta ha sido deshabilitada. Contacte al administrador.';
-          } else {
-            this.loginError = 'Error al iniciar sesión. Verifique sus credenciales.';
-          }
-        }, 10); // <-- Suficiente para reiniciar animación
+        // Destacar el mensaje si es sobre una cuenta deshabilitada
+        if (error.message.includes('deshabilitada')) {
+          this.errorMessage = `<div class="flex items-center">
+            <svg class="w-5 h-5 mr-2 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zm-1 9a1 1 0 01-1-1v-4a1 1 0 112 0v4a1 1 0 01-1 1z" clip-rule="evenodd"></path>
+            </svg>
+            <span class="font-medium">${error.message}</span>
+          </div>`;
+        } else {
+          this.errorMessage = `<div class="flex items-center">
+            <svg class="w-5 h-5 mr-2 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zm-1 9a1 1 0 01-1-1v-4a1 1 0 112 0v4a1 1 0 01-1 1z" clip-rule="evenodd"></path>
+            </svg>
+            <span class="font-medium">${error.message}</span>
+          </div>`;
+        }
+        this.loading = false;
       }
     });
   }
 
-  // <-- Redirige al formulario de registro -->
   registrarse() {
-    this.router.navigate(['register']);
+    console.log('Navegando a registro...');
+    this.router.navigate(['/register']);
   }
 
+  volverAlInicio() {
+    this.router.navigate(['/']);
+  }
 }
