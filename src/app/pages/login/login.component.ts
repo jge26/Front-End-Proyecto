@@ -31,6 +31,7 @@ export class LoginComponent implements OnInit {
   errorMessage: string = '';
   loading: boolean = false;
   submitted: boolean = false;
+  loginSuccess: boolean = false; // Nueva propiedad para el éxito del login
 
   constructor() {
     this.formLogin = this.fb.group({
@@ -123,16 +124,7 @@ export class LoginComponent implements OnInit {
         console.log('Respuesta de login exitosa:', response);
 
         // Redireccionar según el rol del usuario
-        const userRole = response.data?.user?.role_id;
-        console.log('Rol del usuario:', userRole);
-
-        if (userRole === 1 || userRole === 2) { // Admin o Doctor
-          console.log('Redirigiendo a dashboard...');
-          this.router.navigate(['/dashboard']);
-        } else {
-          console.log('Redirigiendo a home...');
-          this.router.navigate(['/']);
-        }
+        this.handleLoginSuccess(response);
 
         this.loading = false;
       },
@@ -158,6 +150,40 @@ export class LoginComponent implements OnInit {
         this.loading = false;
       }
     });
+  }
+
+  // Nuevo método para manejar el éxito en el inicio de sesión
+  handleLoginSuccess(response: any) {
+    try {
+      // Guardar datos de autenticación
+      this.authService.setCurrentUser(response);
+
+      // Obtener el rol del usuario y redirigir según corresponda
+      const userRole = response.data.user.role_id;
+
+      // Redirigir según el rol
+      switch (userRole) {
+        case 1: // Admin
+          this.router.navigate(['/dashboard']);
+          break;
+        case 2: // Doctor
+          this.router.navigate(['/dashboard']);
+          break;
+        case 3: // Paciente
+          this.router.navigate(['/dashboard']); // Todos al dashboard, la UI cambiará según el rol
+          break;
+        default:
+          this.router.navigate(['/']);
+          break;
+      }
+
+      // Mensaje de éxito
+      this.loginSuccess = true;
+      this.errorMessage = '';
+    } catch (error) {
+      console.error('Error en inicio de sesión:', error);
+      this.errorMessage = 'Hubo un problema al procesar el inicio de sesión.';
+    }
   }
 
   registrarse() {
