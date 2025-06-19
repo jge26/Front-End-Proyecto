@@ -1,6 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router'; // Añadir esta importación
 import { AdminService } from '../../../services/admin.service';
 import { UserListItem } from '../../../interfaces/UserList';
 import { AuthService } from '../../../services/auth.service';
@@ -9,7 +10,13 @@ import { EditUserComponent } from './edit-user/edit-user.component';
 @Component({
   selector: 'app-usuarios',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, EditUserComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    EditUserComponent,
+    RouterModule,
+  ],
   styleUrls: ['./usuarios.component.css'],
   templateUrl: './usuarios.component.html',
 })
@@ -46,12 +53,13 @@ export class UsuariosComponent implements OnInit {
   // Métodos para solucionar los errores de cálculos en expresiones
   getActiveUserCount(): number {
     if (!this.users) return 0;
-    return this.users.filter(user => user.enabled === 1).length;
+    return this.users.filter((user) => user.enabled === 1).length;
   }
 
   getDoctorCount(): number {
     if (!this.users) return 0;
-    return this.users.filter(user => this.getRoleLabel(user) === 'Doctor').length;
+    return this.users.filter((user) => this.getRoleLabel(user) === 'Doctor')
+      .length;
   }
 
   getRoleLabel(user: UserListItem): string {
@@ -123,21 +131,21 @@ export class UsuariosComponent implements OnInit {
     if (this.selectedRoleFilter === 'all') {
       this.filteredUsers = [...this.users];
     } else if (this.selectedRoleFilter === 'doctor') {
-      this.filteredUsers = this.users.filter(user => {
+      this.filteredUsers = this.users.filter((user) => {
         try {
           if ((user as any).role_id === 2) return true;
         } catch (e) {}
         return user.email && user.email.includes('doctor');
       });
     } else if (this.selectedRoleFilter === 'patient') {
-      this.filteredUsers = this.users.filter(user => {
+      this.filteredUsers = this.users.filter((user) => {
         try {
           if ((user as any).role_id === 3) return true;
         } catch (e) {}
         return !user.email || !user.email.includes('doctor');
       });
     } else if (this.selectedRoleFilter === 'admin') {
-      this.filteredUsers = this.users.filter(user => {
+      this.filteredUsers = this.users.filter((user) => {
         try {
           return (user as any).role_id === 1;
         } catch (e) {
@@ -161,7 +169,10 @@ export class UsuariosComponent implements OnInit {
 
     this.currentPage = page;
     const startIdx = (page - 1) * this.itemsPerPage;
-    const endIdx = Math.min(startIdx + this.itemsPerPage, this.filteredUsers.length);
+    const endIdx = Math.min(
+      startIdx + this.itemsPerPage,
+      this.filteredUsers.length
+    );
 
     this.startItem = this.filteredUsers.length > 0 ? startIdx + 1 : 0;
     this.endItem = endIdx;
@@ -174,9 +185,11 @@ export class UsuariosComponent implements OnInit {
   }
 
   showPageNumber(page: number): boolean {
-    return page === 1 ||
-           page === this.totalPages ||
-           Math.abs(page - this.currentPage) <= 1;
+    return (
+      page === 1 ||
+      page === this.totalPages ||
+      Math.abs(page - this.currentPage) <= 1
+    );
   }
 
   onItemsPerPageChange(): void {
