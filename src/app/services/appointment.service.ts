@@ -6,7 +6,7 @@ import { appSettings } from '../settings/appsettings';
 import { HorarioDisponible } from '../interfaces/medical.interface';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AppointmentService {
   private http = inject(HttpClient);
@@ -21,8 +21,8 @@ export class AppointmentService {
     const token = localStorage.getItem('token');
     return new HttpHeaders({
       'Content-Type': 'application/json',
-      'Accept': 'application/json',
-      'Authorization': `Bearer ${token}`
+      Accept: 'application/json',
+      Authorization: `Bearer ${token}`,
     });
   }
 
@@ -30,21 +30,20 @@ export class AppointmentService {
   getMedicosCompleto(): Observable<any> {
     // Si tenemos datos en caché recientes, usarlos
     const ahora = Date.now();
-    if (this.medicosCache && (ahora - this.lastCacheTime) < this.cacheDuration) {
+    if (this.medicosCache && ahora - this.lastCacheTime < this.cacheDuration) {
       return of(this.medicosCache);
     }
 
     // Si no hay caché o expiró, hacer la solicitud
-    return this.http.get(`${this.baseUrl}/medicos/listado-completo`)
-      .pipe(
-        map((response: any) => {
-          // Guardar en caché
-          this.medicosCache = response;
-          this.lastCacheTime = Date.now();
-          return response;
-        }),
-        catchError(this.handleError)
-      );
+    return this.http.get(`${this.baseUrl}/medicos/listado-completo`).pipe(
+      map((response: any) => {
+        // Guardar en caché
+        this.medicosCache = response;
+        this.lastCacheTime = Date.now();
+        return response;
+      }),
+      catchError(this.handleError)
+    );
   }
 
   // Obtener médico por ID con sus horarios disponibles
@@ -81,10 +80,13 @@ export class AppointmentService {
   }
 
   // Nuevo método para obtener bloques de horarios disponibles basados en la disponibilidad real del médico
-  getHorariosDisponibles(medicoId: number, fecha: string): Observable<HorarioDisponible[]> {
+  getHorariosDisponibles(
+    medicoId: number,
+    fecha: string
+  ): Observable<HorarioDisponible[]> {
     // Primero obtenemos al médico con sus horarios
     return this.getMedicoById(medicoId).pipe(
-      switchMap(medico => {
+      switchMap((medico) => {
         // Verificar si el médico tiene disponibilidad
         if (!medico.tiene_disponibilidad) {
           return of([]);
@@ -92,7 +94,15 @@ export class AppointmentService {
 
         // Convertir la fecha a objeto Date para obtener el día de la semana
         const fechaObj = new Date(fecha);
-        const diasSemana = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+        const diasSemana = [
+          'Domingo',
+          'Lunes',
+          'Martes',
+          'Miércoles',
+          'Jueves',
+          'Viernes',
+          'Sábado',
+        ];
         const diaSemana = diasSemana[fechaObj.getDay()];
 
         // Verificar si el médico atiende ese día
@@ -116,12 +126,13 @@ export class AppointmentService {
             disponible: disponible,
             estado: bloque.estado,
             reservada: bloque.estado === 'ocupado',
-            precio: bloque.precio
+            precio: bloque.precio,
           });
         });
 
         // Log para debuggear (solo en desarrollo)
-        console.debug(`Generados ${slots.length} slots para ${diaSemana}:`,
+        console.debug(
+          `Generados ${slots.length} slots para ${diaSemana}:`,
           slots.reduce((acc, slot) => {
             const key = slot.estado;
             acc[key] = (acc[key] || 0) + 1;
@@ -131,7 +142,7 @@ export class AppointmentService {
 
         return of(slots);
       }),
-      catchError(err => {
+      catchError((err) => {
         console.error('Error al obtener horarios disponibles:', err);
         return of([]);
       })
@@ -141,9 +152,13 @@ export class AppointmentService {
   // Verificar horarios reservados para un médico y fecha
   getHorariosReservados(doctorId: number, fecha: string): Observable<string[]> {
     const headers = this.getHeaders();
-    return this.http.get<any>(`${this.baseUrl}/appointments/doctor/${doctorId}/fecha/${fecha}`, { headers })
+    return this.http
+      .get<any>(
+        `${this.baseUrl}/appointments/doctor/${doctorId}/fecha/${fecha}`,
+        { headers }
+      )
       .pipe(
-        map(response => {
+        map((response) => {
           if (response && response.appointments) {
             return response.appointments.map((app: any) => {
               // Extraer solo la parte de la hora (HH:MM) de la fecha completa
@@ -158,19 +173,22 @@ export class AppointmentService {
   }
 
   // Método para verificar disponibilidad del médico usando los datos reales
-  checkDisponibilidadMedico(doctorId: number, fecha: string): Observable<{ status: string, data: HorarioDisponible[] }> {
+  checkDisponibilidadMedico(
+    doctorId: number,
+    fecha: string
+  ): Observable<{ status: string; data: HorarioDisponible[] }> {
     return this.getHorariosDisponibles(doctorId, fecha).pipe(
-      map(horarios => {
+      map((horarios) => {
         return {
           status: 'success',
-          data: horarios
+          data: horarios,
         };
       }),
-      catchError(error => {
+      catchError((error) => {
         console.error('Error al verificar disponibilidad:', error);
         return of({
           status: 'error',
-          data: []
+          data: [],
         });
       })
     );
@@ -186,10 +204,11 @@ export class AppointmentService {
   }): Observable<any> {
     const headers = this.getHeaders();
     // Usar el nuevo endpoint
-    return this.http.post(`${this.baseUrl}/citas/agendar`, data, { headers })
+    return this.http
+      .post(`${this.baseUrl}/citas/agendar`, data, { headers })
       .pipe(
         // Al agendar con éxito, limpiamos la caché para forzar una actualización en la próxima solicitud
-        map(response => {
+        map((response) => {
           this.medicosCache = null;
           return response;
         }),
@@ -198,28 +217,34 @@ export class AppointmentService {
   }
 
   // Actualizar cita (para uso de admin)
-  updateAppointment(appointmentId: number, data: {
-    date: string;
-    startTime: string;
-    endTime: string;
-    reason: string;
-  }): Observable<any> {
+  updateAppointment(
+    appointmentId: number,
+    data: {
+      date: string;
+      startTime: string;
+      endTime: string;
+      reason: string;
+    }
+  ): Observable<any> {
     const headers = this.getHeaders();
-    return this.http.put(`${this.baseUrl}/citas/${appointmentId}`, data, { headers })
+    return this.http
+      .put(`${this.baseUrl}/citas/${appointmentId}`, data, { headers })
       .pipe(catchError(this.handleError));
   }
 
   // Cancelar cita (para uso de admin)
   cancelAppointment(appointmentId: number): Observable<any> {
     const headers = this.getHeaders();
-    return this.http.delete(`${this.baseUrl}/citas/${appointmentId}`, { headers })
+    return this.http
+      .delete(`${this.baseUrl}/citas/${appointmentId}`, { headers })
       .pipe(catchError(this.handleError));
   }
 
   // Obtener citas del usuario current
   getAppointments(): Observable<any> {
     const headers = this.getHeaders();
-    return this.http.get(`${this.baseUrl}/appointments`, { headers })
+    return this.http
+      .get(`${this.baseUrl}/appointments`, { headers })
       .pipe(catchError(this.handleError));
   }
 
@@ -230,16 +255,28 @@ export class AppointmentService {
     console.log(`Depurando horarios para médico ${medicoId} en fecha ${fecha}`);
 
     return this.getMedicoById(medicoId).pipe(
-      map(medico => {
+      map((medico) => {
         console.log('Información del médico:', medico);
 
         const fechaObj = new Date(fecha);
-        const diasSemana = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+        const diasSemana = [
+          'Domingo',
+          'Lunes',
+          'Martes',
+          'Miércoles',
+          'Jueves',
+          'Viernes',
+          'Sábado',
+        ];
         const diaSemana = diasSemana[fechaObj.getDay()];
 
         console.log(`Día de la semana para ${fecha}: ${diaSemana}`);
-        console.log(`Días disponibles del médico: ${medico.dias_disponibles?.join(', ')}`);
-        console.log(`¿Atiende este día? ${medico.dias_disponibles?.includes(diaSemana)}`);
+        console.log(
+          `Días disponibles del médico: ${medico.dias_disponibles?.join(', ')}`
+        );
+        console.log(
+          `¿Atiende este día? ${medico.dias_disponibles?.includes(diaSemana)}`
+        );
 
         if (medico.horarios && medico.horarios[diaSemana]) {
           console.log(`Bloques para ${diaSemana}:`, medico.horarios[diaSemana]);
@@ -276,9 +313,20 @@ export class AppointmentService {
       errorMsg = `Error: ${error.error.message}`;
     } else if (error.status) {
       // El servidor retornó un código de error
-      errorMsg = error.error?.message || error.error?.error || `Error ${error.status}: ${error.statusText}`;
+      errorMsg =
+        error.error?.message ||
+        error.error?.error ||
+        `Error ${error.status}: ${error.statusText}`;
     }
 
     return throwError(() => new Error(errorMsg));
   }
+
+  getCitasPaciente(): Observable<any> {
+    const headers = this.getHeaders();
+    return this.http
+      .get(`${this.baseUrl}/appointments`, { headers })
+      .pipe(catchError(this.handleError));
+  }
 }
+
