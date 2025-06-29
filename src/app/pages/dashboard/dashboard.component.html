@@ -67,6 +67,18 @@
           </svg>
           <span>Registrar Médico</span>
         </a>
+
+        <!-- Gestionar Cita Médica (Admin)-->
+        <a
+          routerLink="/dashboard/admin"
+          routerLinkActive="bg-teal-50 text-teal-600 border-r-4 border-teal-500"
+          class="flex items-center gap-3 py-3 px-6 text-neutral-700 font-medium hover:bg-neutral-100 cursor-pointer transition-all w-full text-left relative">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
+          </svg>
+          <span>Gestión de Citas</span>
+        </a>
+
       </div>
 
       <!-- Opciones de Médico -->
@@ -94,15 +106,7 @@
           <span>Mi Disponibilidad</span>
         </a>
 
-        <!-- Opciones deshabilitadas para próxima iteración -->
-        <div
-          class="flex items-center gap-3 py-3 px-6 text-neutral-400 cursor-not-allowed transition-all w-full text-left relative">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-          </svg>
-          <span>Gestión de Citas</span>
-          <span class="ml-1 text-xs bg-gray-200 text-gray-600 px-1 py-0.5 rounded">Próximamente</span>
-        </div>
+
 
         <div
           class="flex items-center gap-3 py-3 px-6 text-neutral-400 cursor-not-allowed transition-all w-full text-left relative">

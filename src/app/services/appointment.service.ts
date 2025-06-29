@@ -197,6 +197,25 @@ export class AppointmentService {
       );
   }
 
+  // Actualizar cita (para uso de admin)
+  updateAppointment(appointmentId: number, data: {
+    date: string;
+    startTime: string;
+    endTime: string;
+    reason: string;
+  }): Observable<any> {
+    const headers = this.getHeaders();
+    return this.http.put(`${this.baseUrl}/citas/${appointmentId}`, data, { headers })
+      .pipe(catchError(this.handleError));
+  }
+
+  // Cancelar cita (para uso de admin)
+  cancelAppointment(appointmentId: number): Observable<any> {
+    const headers = this.getHeaders();
+    return this.http.delete(`${this.baseUrl}/citas/${appointmentId}`, { headers })
+      .pipe(catchError(this.handleError));
+  }
+
   // Obtener citas del usuario current
   getAppointments(): Observable<any> {
     const headers = this.getHeaders();

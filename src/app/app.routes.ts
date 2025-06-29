@@ -47,6 +47,11 @@ export const routes: Routes = [
         path: 'appointments',
         loadComponent: () => import('./pages/dashboard/patient/appointments/appointments.component').then(m => m.AppointmentsComponent),
       },
+      // Ruta para Admin (Gestión de Citas)
+      {
+        path: 'admin',
+        loadComponent: () => import('./pages/dashboard/admin/admin-appointments.component').then(m => m.AdminAppointmentsComponent),
+      },
       {
         path: 'historia-medica',
         loadComponent: () => import('./pages/dashboard/patient/medical-history/medical-history.component').then(m => m.MedicalHistoryComponent),
