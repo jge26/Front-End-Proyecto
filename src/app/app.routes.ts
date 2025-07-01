@@ -42,6 +42,14 @@ export const routes: Routes = [
         path: 'disponibilidad',
         loadComponent: () => import('./pages/dashboard/disponibilidad/disponibilidad.component').then(m => m.DisponibilidadComponent),
       },
+      {
+      path: 'diagnostico-medico/:id',
+      loadComponent: () => import('./pages/dashboard/medical-diagnosis/medical-diagnosis.component').then(m => m.MedicalDiagnosisComponent),
+      },
+      {
+      path: 'mis-pacientes',
+      loadComponent: () => import('./pages/dashboard/mis-pacientes/mis-pacientes.component').then(m => m.MisPacientesComponent)
+      },
       // Rutas para pacientes
       {
         path: 'appointments',
