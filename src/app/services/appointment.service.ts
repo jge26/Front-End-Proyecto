@@ -248,6 +248,21 @@ export class AppointmentService {
       .pipe(catchError(this.handleError));
   }
 
+  getCitasPacientes(): Observable<any> {
+    const headers = this.getHeaders();
+    return this.http
+      .get(`${this.baseUrl}/appointments/patient`, { headers })
+      .pipe(catchError(this.handleError));
+  }
+
+  // Obtener TODAS las citas con info de doctor y paciente
+  getAppointmentsAdmin(): Observable<any> {
+    const headers = this.getHeaders();
+    return this.http
+      .get(`${this.baseUrl}/admin/appointments`, { headers })
+      .pipe(catchError(this.handleError));
+  }
+
   // Añade este método de depuración si necesitas verificar datos
 
   // SOLO PARA DESARROLLO - Método para depurar los horarios disponibles

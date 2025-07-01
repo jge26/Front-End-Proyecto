@@ -1,90 +1,147 @@
-<div class="min-h-screen bg-gray-50">
-  <!-- HEADER -->
+<!-- Contenedor principal -->
+<div class="min-h-screen bg-gray-50 flex flex-col">
+
+  <!-- Header -->
   <header class="bg-white shadow-sm border-b">
-    <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+      
+      <!-- Logo y título -->
       <div class="flex items-center space-x-3">
-        <!-- Icono de estetoscopio -->
-        <svg><!-- Icono Stethoscope aquí --></svg>
-        <h1 class="text-2xl font-bold text-gray-800">Panel de Administración - Citas Médicas</h1>
+        <!-- Icono -->
+        <svg class="h-8 w-8 text-blue-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <!-- Icono de stethoscope -->
+          <path d="M12 3v5m0 0a3 3 0 103 3m-3-3a3 3 0 11-3 3m6 4h.01M9 14H6a4 4 0 000 8h12a4 4 0 000-8h-3"></path>
+        </svg>
+        <h1 class="text-2xl font-bold text-gray-800">
+          Panel de Administración - Citas Médicas
+        </h1>
       </div>
+
+      <!-- Filtros y Logout -->
       <div class="flex items-center space-x-4">
-        <!-- Filtro de especialidad -->
+        <!-- Filtro especialidad -->
         <div class="flex items-center space-x-2">
-          <svg><!-- Icono Filter --></svg>
-          <select class="border rounded-md px-3 py-2 text-sm">
-            <!-- Opciones de especialidades -->
+          <svg class="h-5 w-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path d="M3 4a1 1 0 000 2h1v12H3a1 1 0 000 2h18a1 1 0 000-2h-1V6h1a1 1 0 000-2H3z"></path>
+          </svg>
+          <select [(ngModel)]="selectedSpecialty"
+                  class="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
             <option value="all">Todas las especialidades</option>
-            <option value="cardiologia">Cardiología</option>
-            <!-- ... -->
+            <option *ngFor="let specialty of specialties" [value]="specialty.id">
+              {{ specialty.name }}
+            </option>
           </select>
         </div>
-        <button class="text-gray-600 text-sm">Cerrar Sesión</button>
+
       </div>
     </div>
   </header>
 
-  <!-- CONTENIDO PRINCIPAL -->
-  <main class="max-w-7xl mx-auto px-4 py-6 flex gap-6">
-    <!-- Panel izquierdo: Citas y Calendario -->
-    <section class="flex-1 space-y-6">
-      <!-- Bloque: Citas de Hoy -->
-      <div class="bg-white rounded-xl shadow-sm">
+  <!-- Contenido principal con dos columnas -->
+  <div class="max-w-7xl mx-auto px-4 py-6 flex gap-6">
+    
+    <!-- Columna izquierda: Citas de Hoy + Calendario -->
+    <div class="flex-1 space-y-6">
+      
+      <!-- Sección: Citas de Hoy -->
+      <section class="bg-white rounded-xl shadow-sm">
         <div class="p-4 bg-blue-50 border-b">
-          <h2 class="text-lg font-semibold text-gray-800">Citas de Hoy - Sábado 28 de Junio</h2>
-          <p class="text-sm text-gray-600">N citas programadas</p>
+          <h2 class="text-lg font-semibold text-gray-800">Citas de Hoy</h2>
+          <p class="text-sm text-gray-600 mt-1">
+            {{ todayAppointments.length }} citas programadas
+          </p>
         </div>
-        <div class="p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <!-- Cada tarjeta de cita -->
-          <div class="border rounded-lg p-4 hover:shadow-md bg-white">
-            <span class="px-2 py-1 rounded-full text-xs font-medium border bg-green-100 text-green-800 border-green-200">Programada</span>
-            <span class="text-sm font-medium text-gray-600">08:00 - 08:30</span>
-            <h3 class="font-semibold text-gray-800">María González</h3>
-            <p class="text-sm text-gray-600">Dr. Carlos Mendoza</p>
-            <div class="flex justify-between">
-              <span class="text-xs text-gray-500">Cardiología</span>
-              <span class="text-sm font-medium text-blue-600">$50.000</span>
+        <div class="p-4">
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <!-- Tarjetas de cita -->
+            <div *ngFor="let appointment of todayAppointments"
+                (click)="handleAppointmentClick(appointment)"
+                class="border rounded-lg p-4 hover:shadow-md transition-all cursor-pointer bg-white hover:bg-gray-50">
+              
+              <div class="flex items-center justify-between mb-2">
+                <span class="px-2 py-1 rounded-full text-xs font-medium border"
+                      [ngClass]="getStatusColor(appointment.estado)">
+                  {{ appointment.estado | titlecase }}
+                </span>
+                <span class="text-sm font-medium text-gray-600">
+                  {{ appointment.tiempoInicio }} - {{ appointment.tiempoFin }}
+                </span>
+              </div>
+              <h3 class="font-semibold text-gray-800 mb-1">{{ appointment.paciente }}</h3>
+              <p class="text-sm text-gray-600 mb-2">{{ appointment.doctorNombre }}</p>
+              <div class="flex items-center justify-between">
+                <span class="text-xs text-gray-500">{{ appointment.especialidad }}</span>
+                <span class="text-sm font-medium text-blue-600">{{ appointment.precio | currency }}</span>
+              </div>
             </div>
           </div>
-          <!-- ... más tarjetas -->
         </div>
-      </div>
+      
+      </section>
 
-      <!-- Bloque: Calendario -->
-      <div class="bg-white rounded-xl shadow-sm">
-        <div class="p-4 bg-gray-50 border-b flex justify-between">
-          <div>
-            <h2 class="text-lg font-semibold text-gray-800">Calendario de Citas</h2>
-            <p class="text-sm text-gray-600">Mostrando todas las citas</p>
-          </div>
-          <div class="flex items-center space-x-4">
-            <!-- Selector Semanal/Mensual -->
-            <div class="flex bg-gray-200 rounded-lg p-1">
-              <button class="px-3 py-1 text-sm rounded-md">Semanal</button>
-              <button class="px-3 py-1 text-sm rounded-md">Mensual</button>
-            </div>
-            <!-- Navegación -->
-            <div class="flex items-center space-x-2">
-              <button class="p-2 hover:bg-gray-200 rounded-md"><!-- Icono prev --></button>
-              <span class="font-medium text-gray-800">Junio 2025</span>
-              <button class="p-2 hover:bg-gray-200 rounded-md"><!-- Icono next --></button>
-            </div>
+      <!-- Sección: Calendario -->
+      <section class="bg-white rounded-xl shadow-sm">
+        <div class="p-4 bg-gray-50 border-b flex items-center justify-between">
+          <h2 class="text-lg font-semibold text-gray-800">Calendario</h2>
+          <!-- Botones para cambiar vista -->
+          <div class="flex items-center space-x-2">
+            <button (click)="viewMode = 'weekly'"
+                    [ngClass]="viewMode === 'weekly' ? 'text-blue-600 font-semibold' : 'text-gray-600'">
+              Semana
+            </button>
+            <button (click)="viewMode = 'monthly'"
+                    [ngClass]="viewMode === 'monthly' ? 'text-blue-600 font-semibold' : 'text-gray-600'">
+              Mes
+            </button>
           </div>
         </div>
         <div class="p-4">
-          <!-- Aquí iría el grid del calendario (semanal o mensual) -->
+          <div *ngIf="viewMode === 'weekly'">
+            <!-- Grid semanal aquí -->
+            <p class="text-gray-500 text-sm">Vista semanal del calendario.</p>
+          </div>
+          <div *ngIf="viewMode === 'monthly'">
+            <!-- Grid mensual aquí -->
+            <p class="text-gray-500 text-sm">Vista mensual del calendario.</p>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- Columna derecha: Panel Detalles de la Cita -->
+    <div *ngIf="selectedAppointment" class="w-96 bg-white rounded-xl shadow-sm">
+      <div class="p-4 bg-blue-50 border-b flex items-center justify-between">
+        <h3 class="text-lg font-semibold text-gray-800">Detalles de la Cita</h3>
+        <button (click)="clearSelectedAppointment()" class="text-gray-500 hover:text-gray-700">
+          <!-- Icono X -->
+          <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+      <div class="p-4 space-y-2">
+        <p><span class="font-semibold">Paciente:</span> {{ selectedAppointment.paciente }}</p>
+        <p><span class="font-semibold">Doctor:</span> {{ selectedAppointment.doctorNombre }}</p>
+        <p><span class="font-semibold">Especialidad:</span> {{ selectedAppointment.especialidad }}</p>
+        <p><span class="font-semibold">Fecha:</span> {{ selectedAppointment.fecha }}</p>
+        <p><span class="font-semibold">Hora:</span> {{ selectedAppointment.tiempoInicio }} - {{ selectedAppointment.tiempoFin }}</p>
+        <p><span class="font-semibold">Costo:</span> {{ selectedAppointment.precio | currency }}</p>
+        <p><span class="font-semibold">Estado:</span> {{ selectedAppointment.estado | titlecase }}</p>
+
+        <!-- Botones de acción -->
+        <div class="flex space-x-2 pt-4">
+          <button (click)="saveChanges()"
+                  class="px-4 py-2 text-sm text-white bg-blue-600 rounded hover:bg-blue-700">
+            Modificar
+          </button>
+          <button (click)="cancelAppointment(selectedAppointment)"
+                  class="px-4 py-2 text-sm text-white bg-red-600 rounded hover:bg-red-700">
+            Cancelar
+          </button>
         </div>
       </div>
-    </section>
-
-    <!-- Panel derecho: Detalles de Cita -->
-    <aside class="w-96 bg-white rounded-xl shadow-sm">
-      <div class="p-4 bg-blue-50 border-b flex justify-between">
-        <h3 class="text-lg font-semibold text-gray-800">Detalles de la Cita</h3>
-        <button class="text-gray-500 hover:text-gray-700"><!-- Icono cerrar --></button>
-      </div>
-      <div class="p-4 space-y-4">
-        <!-- Campos de detalles: Paciente, Doctor, Especialidad, etc. -->
-      </div>
-    </aside>
-  </main>
+    </div>
+  </div>
 </div>
