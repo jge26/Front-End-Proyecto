@@ -13,8 +13,14 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 })
 export class MedicalDiagnosisComponent {
   form: FormGroup;
+  appointmentId!: number;
 
-  constructor(private fb: FormBuilder, private diagnosisService: DiagnosisService, private route: ActivatedRoute) {
+  constructor(
+    private fb: FormBuilder,
+    private diagnosisService: DiagnosisService,
+    private route: ActivatedRoute
+  ) {
+    // Inicializa el formulario con validaciones
     this.form = this.fb.group({
       motivo: ['', Validators.required],
       diagnostico: ['', Validators.required],
@@ -27,9 +33,13 @@ export class MedicalDiagnosisComponent {
       finLicencia: [''],
       motivoLicencia: ['']
     });
+
+    // Obtiene el ID de la cita desde la URL
+    this.appointmentId = Number(this.route.snapshot.paramMap.get('appointmentId'));
   }
 
-  submitForm() {
+  // Envía el formulario para registrar un diagnóstico médico.
+  submitForm(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
@@ -37,7 +47,7 @@ export class MedicalDiagnosisComponent {
 
     const data = this.form.value;
 
-    // Validaciones extra si hay licencia médica
+    // Validaciones adicionales si se incluye licencia médica
     if (data.tieneLicencia) {
       if (!data.diasLicencia || data.diasLicencia <= 0) {
         alert('La cantidad de días de licencia debe ser mayor a 0.');
@@ -53,9 +63,40 @@ export class MedicalDiagnosisComponent {
       }
     }
 
-    this.diagnosisService.createDiagnosis(data).subscribe({
-      next: () => alert('Diagnóstico registrado con éxito.'),
-      error: () => alert('Ocurrió un error al registrar el diagnóstico.')
+    // Payload para el diagnóstico
+    const diagnosticoPayload = {
+      appointment_id: this.appointmentId,
+      motivo_consulta: data.motivo,
+      diagnostico: data.diagnostico,
+      tratamiento: data.tratamiento,
+      notas: data.notas
+    };
+
+    // Registrar diagnóstico
+    this.diagnosisService.createDiagnosis(diagnosticoPayload).subscribe({
+      next: (res) => {
+        const diagnosticoId = res.diagnostico.id;
+
+        // Si incluye licencia médica
+        if (data.tieneLicencia) {
+          const licenciaPayload = {
+            diagnostico_id: diagnosticoId,
+            dias: data.diasLicencia,
+            fecha_inicio: data.inicioLicencia,
+            motivo: data.motivoLicencia
+          };
+
+          this.diagnosisService.createLicense(licenciaPayload).subscribe({
+            next: () => alert('Diagnóstico y licencia registrados con éxito.'),
+            error: () => alert('Diagnóstico registrado, pero falló la licencia.')
+          });
+        } else {
+          alert('Diagnóstico registrado con éxito.');
+        }
+      },
+      error: () => {
+        alert('Ocurrió un error al registrar el diagnóstico.');
+      }
     });
   }
 }

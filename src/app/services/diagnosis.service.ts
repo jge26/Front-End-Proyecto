@@ -12,7 +12,11 @@ export class DiagnosisService {
 
   // Crear un nuevo diagnóstico
   createDiagnosis(data: any): Observable<any> {
-    return this.http.post(this.apiUrl, data);
+    return this.http.post(`${this.apiUrl}/registrarDiagnostico`, data);
+  }
+
+  createLicense(data: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/emitirLicencia`, data);
   }
 
   // Obtener diagnósticos de un paciente específico
@@ -26,7 +30,7 @@ export class DiagnosisService {
   }
 
   // Descargar PDF de licencia 
-  downloadLicensePdf(id: number): Observable<Blob> {
-    return this.http.get(`${this.apiUrl}/${id}/license-pdf`, { responseType: 'blob' });
+  downloadLicensePDF(appointmentId: number): Observable<any> {
+    return this.http.post(`${this.apiUrl}/licencia/pdf/citaLicencia`, { appointment_id: appointmentId });
   }
 }

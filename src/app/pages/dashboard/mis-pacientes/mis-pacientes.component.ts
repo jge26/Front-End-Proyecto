@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { AppointmentService } from '../../../services/appointment.service';
+import { DiagnosisService } from '../../../services/diagnosis.service';
 
 // Interfaz para definir el tipo de datos de una cita
 interface Cita {
@@ -31,55 +33,49 @@ export class MisPacientesComponent implements OnInit {
   modalVisible = false;
   diagnosticoActual: any = null;
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private appointmentService: AppointmentService,private diagnosisService: DiagnosisService) {}
 
   ngOnInit(): void {
-    // Simulación de datos, reemplazar por servicio real en el futuro
-    this.citasCompletadas = [
-      {
-        id: 1,
-        pacienteIniciales: 'JP',
-        pacienteNombre: 'Juan Pérez',
-        pacienteEdad: 35,
-        fecha: new Date('2025-06-17T10:00:00'),
-        hora: '10:00 AM',
-        duracion: '60 min',
-        estado: 'Completada',
-        tieneDiagnostico: true
+    this.appointmentService.getCitasDelMedico().subscribe({
+      next: (res) => {
+        this.citasCompletadas = res
+          .filter((cita: any) => cita.estado === 'completada')
+          .map((cita: any) => ({
+            id: cita.id,
+            pacienteIniciales: this.getIniciales(cita.paciente?.nombre || 'SN'),
+            pacienteNombre: cita.paciente?.nombre || 'Sin nombre',
+            pacienteEdad: this.calcularEdad(cita.paciente?.fecha_nacimiento),
+            fecha: new Date(cita.fecha),
+            hora: cita.hora_inicio,
+            duracion: cita.duracion + ' min',
+            estado: cita.estado,
+            tieneDiagnostico: !!cita.diagnostico
+          }));
       },
-      {
-        id: 2,
-        pacienteIniciales: 'MG',
-        pacienteNombre: 'María González',
-        pacienteEdad: 42,
-        fecha: new Date('2025-06-15T11:30:00'),
-        hora: '11:30 AM',
-        duracion: '30 min',
-        estado: 'Completada',
-        tieneDiagnostico: false
+      error: () => {
+        alert('Error al obtener las citas del médico.');
       }
-    ];
+    });
   }
 
-  // Mostrar modal con diagnóstico simulado
-  verDiagnostico(cita: Cita): void {
-    if (cita.tieneDiagnostico) {
-      this.modalVisible = true;
-      this.diagnosticoActual = {
-        motivo_consulta: 'Dolor abdominal persistente',
-        diagnostico: 'Gastritis crónica',
-        tratamiento: 'Omeprazol por 14 días',
-        medicamentos: 'Omeprazol 20mg',
-        notas: 'Se recomienda dieta blanda.',
-        licencia: {
-          dias: 3,
-          fecha_inicio: new Date('2025-06-16'),
-          fecha_fin: new Date('2025-06-19'),
-          motivo: 'Reposo médico'
-        }
-      };
-    }
+  getIniciales(nombre: string): string {
+    return nombre
+      .split(' ')
+      .slice(0, 2)
+      .map(n => n[0].toUpperCase())
+      .join('');
   }
+
+  calcularEdad(fechaNacimiento: string): number {
+    const hoy = new Date();
+    const nacimiento = new Date(fechaNacimiento);
+    let edad = hoy.getFullYear() - nacimiento.getFullYear();
+    const m = hoy.getMonth() - nacimiento.getMonth();
+    if (m < 0 || (m === 0 && hoy.getDate() < nacimiento.getDate())) {
+      edad--;
+    }
+    return edad;
+  }  
 
   // Cerrar modal
   cerrarModal(): void {
@@ -92,8 +88,22 @@ export class MisPacientesComponent implements OnInit {
     console.log('Redirigiendo a diagnóstico para la cita:', cita);
     this.router.navigate(['/dashboard/diagnostico-medico', cita.id]);
   }
-  descargarPDF() {
-  // En el futuro aquí puedes usar jsPDF o generar desde backend
-  console.log('Descargando PDF del diagnóstico de:', this.diagnosticoActual?.pacienteNombre);
-}
+  descargarPDF(cita: Cita): void {
+    this.diagnosisService.downloadLicensePDF(cita.id).subscribe({
+      next: (res) => {
+        if (res.url) {
+          window.open(res.url, '_blank');
+        } else {
+          alert('No se encontró la URL del PDF.');
+        }
+      },
+      error: () => {
+        alert('No se pudo descargar el diagnóstico.');
+      }
+    });
+  }
+
+  verDiagnostico(cita: Cita): void {
+    this.router.navigate(['/dashboard/ver-diagnostico', cita.id]);
+  }
 }
