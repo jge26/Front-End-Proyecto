@@ -216,27 +216,26 @@ export class AppointmentService {
       );
   }
 
-  // Actualizar cita (para uso de admin)
-  updateAppointment(
-    appointmentId: number,
-    data: {
-      date: string;
-      startTime: string;
-      endTime: string;
-      reason: string;
-    }
-  ): Observable<any> {
+  updateAppointment(data: {
+    appointment_id: number;
+    scheduled_at?: string;
+    doctor_id?: number;
+    reason?: string;
+  }): Observable<any> {
     const headers = this.getHeaders();
     return this.http
-      .put(`${this.baseUrl}/citas/${appointmentId}`, data, { headers })
+      .put(`${this.baseUrl}/admin/appointments/update`, data, { headers })
       .pipe(catchError(this.handleError));
   }
 
   // Cancelar cita (para uso de admin)
   cancelAppointment(appointmentId: number): Observable<any> {
     const headers = this.getHeaders();
+
+    const body = { appointment_id: appointmentId };
+
     return this.http
-      .delete(`${this.baseUrl}/citas/${appointmentId}`, { headers })
+      .post(`${this.baseUrl}/admin/appointments/cancel`, body, { headers })
       .pipe(catchError(this.handleError));
   }
 
