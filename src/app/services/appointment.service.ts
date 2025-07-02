@@ -343,4 +343,3 @@ export class AppointmentService {
       .pipe(catchError(this.handleError));
   }
 }
-

@@ -233,11 +233,13 @@ export class AdminAppointmentsComponent implements OnInit {
     return appointmentDateTime < now;
   }
 
+
   handleAppointmentClick(appointment: AdminAppointment): void {
     this.selectedAppointment = appointment;
     this.errorMessage = '';
     this.successMessage = '';
   }
+
 
   startEditing(appointment: AdminAppointment): void {
     if (this.isPastAppointment(appointment)) {
@@ -260,26 +262,29 @@ export class AdminAppointmentsComponent implements OnInit {
       return;
     }
 
-    const changes = this.editForm.value;
+    const formData = this.editForm.value;
 
-    this.appointmentService
-      .updateAppointment(this.editingAppointmentId, changes)
-      .subscribe({
-        next: (response) => {
-          if (response.status === 'success') {
-            this.successMessage = 'Cita modificada correctamente.';
-            this.editingAppointmentId = null;
-            this.loadAppointments();
-          } else {
-            this.errorMessage =
-              response.message || 'Error al modificar la cita.';
-          }
-        },
-        error: (err) => {
-          this.errorMessage =
-            err.message || 'Error en la comunicación con el servidor.';
-        },
-      });
+    const payload = {
+      appointment_id: this.editingAppointmentId,
+      scheduled_at: `${formData.fecha} ${formData.tiempoInicio}`,
+      reason: formData.razon,
+    };
+
+    this.appointmentService.updateAppointment(payload).subscribe({
+      next: (response) => {
+        if (response.status === 'success') {
+          this.successMessage = 'Cita modificada correctamente.';
+          this.editingAppointmentId = null;
+          this.loadAppointments();
+        } else {
+          this.errorMessage = response.message || 'Error al modificar la cita.';
+        }
+      },
+      error: (err) => {
+        this.errorMessage =
+          err.message || 'Error en la comunicación con el servidor.';
+      },
+    });
   }
 
   cancelAppointment(appointment: AdminAppointment): void {
@@ -298,16 +303,17 @@ export class AdminAppointmentsComponent implements OnInit {
 
     this.appointmentService.cancelAppointment(appointment.id).subscribe({
       next: (response) => {
-        if (response.status === 'success') {
-          this.successMessage = 'Cita cancelada correctamente.';
-          this.loadAppointments();
-        } else {
-          this.errorMessage = response.message || 'Error al cancelar la cita.';
-        }
+
+        this.successMessage =
+          response.message || 'Cita cancelada correctamente.';
+        this.errorMessage = '';
+        this.loadAppointments();
       },
       error: (err) => {
+
         this.errorMessage =
-          err.message || 'Error en la comunicación con el servidor.';
+          err.error?.error || err.message || 'Error al cancelar la cita.';
+        this.successMessage = '';
       },
     });
   }
@@ -335,13 +341,17 @@ export class AdminAppointmentsComponent implements OnInit {
     }
   }
 
-  get todayAppointments(): AdminAppointment[] {
-    const today = new Date().toISOString().split('T')[0];
+  get selectedAppointments(): AdminAppointment[] {
+    const selected = this.formatDate(this.selectedDate);
     return this.appointments.filter(
       (app) =>
-        app.fecha === today &&
+        app.fecha === selected &&
         (this.selectedSpecialty === 'all' ||
           app.especialidad === this.selectedSpecialty)
     );
+  }
+
+  createDate(day: number): Date {
+    return new Date(this.currentDate.getFullYear(), this.currentDate.getMonth(), day);
   }
 }
