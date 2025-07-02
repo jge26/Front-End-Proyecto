@@ -1,147 +1,284 @@
-<!-- Contenedor principal -->
-<div class="min-h-screen bg-gray-50 flex flex-col">
-
+<div class="min-h-screen bg-gray-50">
   <!-- Header -->
-  <header class="bg-white shadow-sm border-b">
-    <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-      
-      <!-- Logo y título -->
-      <div class="flex items-center space-x-3">
-        <!-- Icono -->
-        <svg class="h-8 w-8 text-blue-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <!-- Icono de stethoscope -->
-          <path d="M12 3v5m0 0a3 3 0 103 3m-3-3a3 3 0 11-3 3m6 4h.01M9 14H6a4 4 0 000 8h12a4 4 0 000-8h-3"></path>
-        </svg>
-        <h1 class="text-2xl font-bold text-gray-800">
+  <header class="bg-white shadow-md border-b">
+    <div class="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
+      <div class="flex items-center space-x-4">
+        <i data-lucide="stethoscope" class="h-10 w-10 text-blue-600"></i>
+        <h1 class="text-3xl font-extrabold text-gray-900 select-none">
           Panel de Administración - Citas Médicas
         </h1>
       </div>
 
-      <!-- Filtros y Logout -->
+
       <div class="flex items-center space-x-4">
-        <!-- Filtro especialidad -->
+
         <div class="flex items-center space-x-2">
-          <svg class="h-5 w-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path d="M3 4a1 1 0 000 2h1v12H3a1 1 0 000 2h18a1 1 0 000-2h-1V6h1a1 1 0 000-2H3z"></path>
-          </svg>
-          <select [(ngModel)]="selectedSpecialty"
-                  class="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <i data-lucide="calendar" class="h-6 w-6 text-gray-400"></i>
+          <select
+            [(ngModel)]="selectedSpecialty"
+            (change)="loadAppointments()"
+            class="block w-full max-w-xs border border-gray-300 rounded-md bg-white py-2 px-3 text-sm font-medium text-gray-700 shadow-sm transition focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          >
             <option value="all">Todas las especialidades</option>
-            <option *ngFor="let specialty of specialties" [value]="specialty.id">
+            <option *ngFor="let specialty of specialties" [value]="specialty.name">
               {{ specialty.name }}
             </option>
           </select>
         </div>
-
+        
       </div>
     </div>
   </header>
 
-  <!-- Contenido principal con dos columnas -->
-  <div class="max-w-7xl mx-auto px-4 py-6 flex gap-6">
-    
-    <!-- Columna izquierda: Citas de Hoy + Calendario -->
-    <div class="flex-1 space-y-6">
-      
-      <!-- Sección: Citas de Hoy -->
-      <section class="bg-white rounded-xl shadow-sm">
-        <div class="p-4 bg-blue-50 border-b">
-          <h2 class="text-lg font-semibold text-gray-800">Citas de Hoy</h2>
-          <p class="text-sm text-gray-600 mt-1">
-            {{ todayAppointments.length }} citas programadas
-          </p>
+  <!-- Main Content -->
+  <main class="max-w-7xl mx-auto px-6 py-8">
+    <div *ngIf="loading" class="text-center py-12">
+      <p class="text-gray-500">Cargando citas médicas...</p>
+    </div>
+    <div *ngIf="errorMessage" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+      {{ errorMessage }}
+    </div>
+    <div *ngIf="successMessage" class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6">
+      {{ successMessage }}
+    </div>
+
+    <div class="flex justify-end mb-4">
+      <label class="text-sm font-medium mr-2">Vista:</label>
+      <select [(ngModel)]="viewMode" class="border border-gray-300 rounded px-2 py-1 text-sm">
+        <option value="weekly">Semanal</option>
+        <option value="monthly">Mensual</option>
+      </select>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-md p-6 mb-8">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-xl font-semibold text-gray-900">
+          {{ viewMode === 'weekly' ? 'Semana de ' + (getWeekDays(currentDate)[0] | date: 'd MMMM yyyy') : 'Mes de ' + getMonthName(currentDate) + ' ' + currentDate.getFullYear() }}
+        </h2>
+        <div class="flex space-x-2">
+          <button *ngIf="viewMode === 'weekly'" (click)="navigateWeek(-1)" class="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300">
+            ← Semana anterior
+          </button>
+          <button *ngIf="viewMode === 'weekly'" (click)="navigateWeek(1)" class="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300">
+            Semana siguiente →
+          </button>
+          <button *ngIf="viewMode === 'monthly'" (click)="navigateMonth(-1)" class="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300">
+            ← Mes anterior
+          </button>
+          <button *ngIf="viewMode === 'monthly'" (click)="navigateMonth(1)" class="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300">
+            Mes siguiente →
+          </button>
         </div>
-        <div class="p-4">
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <!-- Tarjetas de cita -->
-            <div *ngFor="let appointment of todayAppointments"
-                (click)="handleAppointmentClick(appointment)"
-                class="border rounded-lg p-4 hover:shadow-md transition-all cursor-pointer bg-white hover:bg-gray-50">
-              
-              <div class="flex items-center justify-between mb-2">
-                <span class="px-2 py-1 rounded-full text-xs font-medium border"
-                      [ngClass]="getStatusColor(appointment.estado)">
-                  {{ appointment.estado | titlecase }}
+      </div>
+
+      <!-- Weekly View -->
+      <div *ngIf="viewMode === 'weekly'" class="grid grid-cols-7 gap-4">
+        <div *ngFor="let day of getWeekDays(currentDate)" class="border border-gray-200 rounded-lg p-3 bg-gray-50">
+          <h3 class="text-sm font-semibold mb-2 text-blue-700">
+            {{ getDayName(day) }}<br />
+            <span class="text-gray-500">{{ day | date: 'd MMM' }}</span>
+          </h3>
+          <div *ngIf="getAppointmentsForDate(day).length === 0" class="text-xs italic text-gray-400">Sin citas</div>
+          <div *ngFor="let appointment of getAppointmentsForDate(day)" (click)="handleAppointmentClick(appointment)" class="text-xs border border-gray-300 rounded px-2 py-1 mb-2 bg-white cursor-pointer hover:bg-blue-50 transition">
+            <div class="flex justify-between font-medium">
+              <span>{{ appointment.tiempoInicio }}</span>
+              <span class="italic text-gray-500">{{ appointment.estado }}</span>
+            </div>
+            <div class="truncate font-semibold text-gray-800">{{ appointment.paciente }}</div>
+            <div class="truncate text-gray-500">{{ appointment.doctorNombre }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Monthly View -->
+      <div *ngIf="viewMode === 'monthly'">
+        <div class="grid grid-cols-7 gap-2 text-center font-medium text-sm text-gray-500 mb-2">
+          <div *ngFor="let day of ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb']">{{ day }}</div>
+        </div>
+        <div class="grid grid-cols-7 gap-2 text-sm">
+          <ng-container *ngIf="getFirstDayOfMonth(currentDate) as startDay">
+            <div *ngFor="let _ of [].constructor(startDay)" class="h-10"></div>
+            <ng-container *ngFor="let day of [].constructor(getDaysInMonth(currentDate)); let i = index">
+              <div
+                (click)="selectDate(createDate(i + 1))"
+                class="h-10 flex items-center justify-center rounded cursor-pointer transition hover:bg-blue-100"
+                [ngClass]="{
+                  'bg-blue-600 text-white': isSameDay(selectedDate, createDate(i + 1)),
+                  'text-blue-600 font-semibold': getAppointmentsForDate(createDate(i + 1)).length > 0
+                }"
+              >
+                {{ i + 1 }}
+              </div>
+            </ng-container>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex gap-8 min-h-[500px]">
+      <!-- Left Column -->
+      <section class="flex-grow-[2] min-w-[500px] space-y-8">
+        <!-- Selected Day's Appointments -->
+        <article class="bg-white rounded-2xl shadow-md p-6 min-h-[300px]">
+          <header class="border-b border-gray-200 pb-3 mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between">
+            <h2 class="text-xl font-semibold text-gray-900">
+              Citas del {{ selectedDate | date: 'fullDate' }}
+            </h2>
+            <p class="mt-1 sm:mt-0 text-sm text-gray-500">
+              {{ selectedAppointments.length }} cita{{ selectedAppointments.length !== 1 ? 's' : '' }} programada{{ selectedAppointments.length !== 1 ? 's' : '' }}
+            </p>
+          </header>
+
+          <div *ngIf="selectedAppointments.length === 0" class="text-gray-400 text-center py-20 font-light italic">
+            No hay citas programadas para este día.
+          </div>
+
+          <div *ngIf="selectedAppointments.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div
+              *ngFor="let appointment of selectedAppointments"
+              (click)="handleAppointmentClick(appointment)"
+              class="border border-gray-200 rounded-xl p-5 cursor-pointer bg-white hover:shadow-lg hover:bg-gray-50 transition-shadow duration-300"
+            >
+              <div class="flex items-center justify-between mb-3">
+                <span class="px-3 py-1 rounded-full text-xs font-semibold border {{ getStatusColor(appointment.estado) }}">
+                  {{ appointment.estado }}
                 </span>
-                <span class="text-sm font-medium text-gray-600">
+                <time class="text-sm font-medium text-gray-600">
                   {{ appointment.tiempoInicio }} - {{ appointment.tiempoFin }}
+                </time>
+              </div>
+              <h3 class="font-semibold text-gray-900 mb-1 truncate">{{ appointment.paciente }}</h3>
+              <p class="text-sm text-gray-600 mb-3 truncate">{{ appointment.doctorNombre }}</p>
+              <div class="flex items-center justify-between text-sm text-gray-500">
+                <span class="italic">{{ appointment.especialidad }}</span>
+                <span class="font-semibold text-blue-600">
+                  {{ appointment.precio | currency: 'CLP' : 'symbol' : '1.0-0' }}
                 </span>
               </div>
-              <h3 class="font-semibold text-gray-800 mb-1">{{ appointment.paciente }}</h3>
-              <p class="text-sm text-gray-600 mb-2">{{ appointment.doctorNombre }}</p>
-              <div class="flex items-center justify-between">
-                <span class="text-xs text-gray-500">{{ appointment.especialidad }}</span>
-                <span class="text-sm font-medium text-blue-600">{{ appointment.precio | currency }}</span>
-              </div>
+              
             </div>
           </div>
-        </div>
-      
+        </article>
       </section>
 
-      <!-- Sección: Calendario -->
-      <section class="bg-white rounded-xl shadow-sm">
-        <div class="p-4 bg-gray-50 border-b flex items-center justify-between">
-          <h2 class="text-lg font-semibold text-gray-800">Calendario</h2>
-          <!-- Botones para cambiar vista -->
-          <div class="flex items-center space-x-2">
-            <button (click)="viewMode = 'weekly'"
-                    [ngClass]="viewMode === 'weekly' ? 'text-blue-600 font-semibold' : 'text-gray-600'">
-              Semana
-            </button>
-            <button (click)="viewMode = 'monthly'"
-                    [ngClass]="viewMode === 'monthly' ? 'text-blue-600 font-semibold' : 'text-gray-600'">
-              Mes
-            </button>
-          </div>
-        </div>
-        <div class="p-4">
-          <div *ngIf="viewMode === 'weekly'">
-            <!-- Grid semanal aquí -->
-            <p class="text-gray-500 text-sm">Vista semanal del calendario.</p>
-          </div>
-          <div *ngIf="viewMode === 'monthly'">
-            <!-- Grid mensual aquí -->
-            <p class="text-gray-500 text-sm">Vista mensual del calendario.</p>
-          </div>
-        </div>
-      </section>
-
-    </div>
-
-    <!-- Columna derecha: Panel Detalles de la Cita -->
-    <div *ngIf="selectedAppointment" class="w-96 bg-white rounded-xl shadow-sm">
-      <div class="p-4 bg-blue-50 border-b flex items-center justify-between">
-        <h3 class="text-lg font-semibold text-gray-800">Detalles de la Cita</h3>
-        <button (click)="clearSelectedAppointment()" class="text-gray-500 hover:text-gray-700">
-          <!-- Icono X -->
-          <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M6 18L18 6M6 6l12 12"></path>
-          </svg>
-        </button>
-      </div>
-      <div class="p-4 space-y-2">
-        <p><span class="font-semibold">Paciente:</span> {{ selectedAppointment.paciente }}</p>
-        <p><span class="font-semibold">Doctor:</span> {{ selectedAppointment.doctorNombre }}</p>
-        <p><span class="font-semibold">Especialidad:</span> {{ selectedAppointment.especialidad }}</p>
-        <p><span class="font-semibold">Fecha:</span> {{ selectedAppointment.fecha }}</p>
-        <p><span class="font-semibold">Hora:</span> {{ selectedAppointment.tiempoInicio }} - {{ selectedAppointment.tiempoFin }}</p>
-        <p><span class="font-semibold">Costo:</span> {{ selectedAppointment.precio | currency }}</p>
-        <p><span class="font-semibold">Estado:</span> {{ selectedAppointment.estado | titlecase }}</p>
-
-        <!-- Botones de acción -->
-        <div class="flex space-x-2 pt-4">
-          <button (click)="saveChanges()"
-                  class="px-4 py-2 text-sm text-white bg-blue-600 rounded hover:bg-blue-700">
-            Modificar
+      <!-- Right Column - Appointment Details -->
+      <aside
+        *ngIf="selectedAppointment"
+        class="flex-grow min-w-[350px] max-w-[400px] bg-white rounded-2xl shadow-md p-6 sticky top-8 self-start"
+      >
+        <header class="border-b border-gray-200 pb-3 mb-5 flex items-center justify-between">
+          <h3 class="text-xl font-semibold text-gray-900">Detalles de la Cita</h3>
+          <button
+            (click)="clearSelectedAppointment()"
+            class="text-gray-400 hover:text-gray-700 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded"
+          >
+            <i data-lucide="x" class="h-6 w-6"></i>
           </button>
-          <button (click)="cancelAppointment(selectedAppointment)"
-                  class="px-4 py-2 text-sm text-white bg-red-600 rounded hover:bg-red-700">
-            Cancelar
-          </button>
+        </header>
+
+        <!-- Edit Form -->
+        <form
+          *ngIf="editingAppointmentId === selectedAppointment.id"
+          [formGroup]="editForm"
+          class="space-y-4 text-gray-700 text-sm"
+        >
+          <div>
+            <label for="fecha" class="block font-semibold text-gray-900 mb-1">Fecha:</label>
+            <input
+              id="fecha"
+              type="date"
+              formControlName="fecha"
+              class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            />
+          </div>
+
+          <div class="flex gap-4">
+            <div class="flex-1">
+              <label for="tiempoInicio" class="block font-semibold text-gray-900 mb-1">Hora inicio:</label>
+              <input
+                id="tiempoInicio"
+                type="time"
+                formControlName="tiempoInicio"
+                class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
+              />
+            </div>
+            <div class="flex-1">
+              <label for="tiempoFin" class="block font-semibold text-gray-900 mb-1">Hora fin:</label>
+              <input
+                id="tiempoFin"
+                type="time"
+                formControlName="tiempoFin"
+                class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
+              />
+            </div>
+          </div>
+
+          <div>
+            <label for="razon" class="block font-semibold text-gray-900 mb-1">Razón:</label>
+            <textarea
+              id="razon"
+              rows="3"
+              formControlName="razon"
+              class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Descripción o motivo de la cita"
+              required
+            ></textarea>
+          </div>
+
+          <div class="flex space-x-4 mt-2">
+            <button
+              type="button"
+              (click)="saveChanges()"
+              [disabled]="editForm.invalid"
+              class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 transition disabled:opacity-50"
+            >
+              Guardar
+            </button>
+            <button
+              type="button"
+              (click)="cancelEditing()"
+              class="flex-1 px-4 py-2 bg-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-400 transition"
+            >
+              Cancelar
+            </button>
+          </div>
+        </form>
+
+        <!-- View Mode -->
+        <div *ngIf="editingAppointmentId !== selectedAppointment.id" class="space-y-3 text-gray-700 text-sm leading-relaxed">
+          <p><span class="font-semibold text-gray-900">Paciente:</span> {{ selectedAppointment.paciente }}</p>
+          <p><span class="font-semibold text-gray-900">Doctor:</span> {{ selectedAppointment.doctorNombre }}</p>
+          <p><span class="font-semibold text-gray-900">Especialidad:</span> {{ selectedAppointment.especialidad }}</p>
+          <p><span class="font-semibold text-gray-900">Fecha:</span> {{ selectedAppointment.fecha | date: 'fullDate' }}</p>
+          <p><span class="font-semibold text-gray-900">Hora:</span> {{ selectedAppointment.tiempoInicio }} - {{ selectedAppointment.tiempoFin }}</p>
+          <p><span class="font-semibold text-gray-900">Costo:</span> {{ selectedAppointment.precio | currency: 'CLP' : 'symbol' : '1.0-0' }}</p>
+          <p>
+            <span class="font-semibold text-gray-900">Estado:</span>
+            <span class="{{ getStatusColor(selectedAppointment.estado) }} px-2 py-1 rounded-full text-xs">
+              {{ selectedAppointment.estado }}
+            </span>
+          </p>
+          <p><span class="font-semibold text-gray-900">Razón:</span> {{ selectedAppointment.razon }}</p>
+
+          <div class="flex space-x-4 pt-4">
+            <button
+              (click)="startEditing(selectedAppointment)"
+              class="flex-1 px-4 py-2 bg-yellow-500 text-white rounded-lg font-semibold hover:bg-yellow-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-yellow-500 transition"
+            >
+              Editar
+            </button>
+            <button
+              (click)="cancelAppointment(selectedAppointment)"
+              class="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg font-semibold hover:bg-red-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 transition"
+            >
+              Cancelar
+            </button>
+          </div>
         </div>
-      </div>
+      </aside>
     </div>
-  </div>
+  </main>
 </div>
