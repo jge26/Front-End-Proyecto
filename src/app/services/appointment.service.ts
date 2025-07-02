@@ -262,6 +262,13 @@ export class AppointmentService {
       .pipe(catchError(this.handleError));
   }
 
+  // Obtener las citas del médico autenticado
+  getCitasDelMedico(): Observable<any> {
+    const headers = this.getHeaders();
+    return this.http.get(`${this.baseUrl}/medico/citas`, { headers })
+      .pipe(catchError(this.handleError));
+  }
+
   // Añade este método de depuración si necesitas verificar datos
 
   // SOLO PARA DESARROLLO - Método para depurar los horarios disponibles

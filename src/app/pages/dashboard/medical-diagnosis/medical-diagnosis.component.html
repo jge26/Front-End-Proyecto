@@ -1,0 +1,65 @@
+<!-- Logo sin texto -->
+<div class="flex justify-center mt-4 mb-2">
+  <div class="relative w-20 h-20 rounded-lg overflow-hidden">
+    <img
+        src="assets/app/images/SaludYa - Logo.png"
+        alt="Salud Ya"
+        class="h-24 w-auto"
+    >
+  </div>
+</div>
+
+<!-- Contenedor centrado del formulario -->
+<div class="wrapper">
+  <div class="container">
+    <div class="header">
+      <h1>Registrar Diagnóstico</h1>
+      <p>Los campos marcados con * son obligatorios</p>
+    </div>
+
+    <div class="form-container">
+      <form [formGroup]="form" (ngSubmit)="submitForm()">
+        <label for="motivo" class="required">Motivo de consulta</label>
+        <textarea id="motivo" formControlName="motivo"></textarea>
+
+        <label for="diagnostico" class="required">Diagnóstico del paciente</label>
+        <textarea id="diagnostico" formControlName="diagnostico"></textarea>
+
+        <label for="tratamiento" class="required">Tratamiento</label>
+        <textarea id="tratamiento" formControlName="tratamiento"></textarea>
+
+        <label for="medicamentos" class="required">Medicamentos recetados</label>
+        <textarea id="medicamentos" formControlName="medicamentos"></textarea>
+
+        <label for="notas">Notas adicionales <span class="opcional">(opcional)</span></label>
+        <textarea id="notas" formControlName="notas"></textarea>
+
+        <div class="checkbox-group">
+          <input type="checkbox" id="tieneLicencia" formControlName="tieneLicencia">
+          <label for="tieneLicencia">Incluir licencia médica</label>
+        </div>
+
+        <div class="seccion-licencia" *ngIf="form.get('tieneLicencia')?.value">
+          <label for="diasLicencia" class="required">Cantidad de días de licencia</label>
+          <input type="number" id="diasLicencia" formControlName="diasLicencia" min="1">
+
+          <div class="fechas-licencia">
+            <div>
+              <label for="inicioLicencia" class="required">Fecha de inicio</label>
+              <input type="date" id="inicioLicencia" formControlName="inicioLicencia">
+            </div>
+            <div>
+              <label for="finLicencia" class="required">Fecha de término</label>
+              <input type="date" id="finLicencia" formControlName="finLicencia">
+            </div>
+          </div>
+
+          <label for="motivoLicencia" class="required">Motivo de la licencia médica</label>
+          <textarea id="motivoLicencia" formControlName="motivoLicencia"></textarea>
+        </div>
+
+        <button type="submit" class="boton">Registrar Diagnóstico</button>
+      </form>
+    </div>
+  </div>
+</div>
