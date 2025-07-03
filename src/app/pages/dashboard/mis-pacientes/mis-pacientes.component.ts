@@ -38,7 +38,8 @@ export class MisPacientesComponent implements OnInit {
   ngOnInit(): void {
     this.appointmentService.getCitasDelMedico().subscribe({
       next: (res) => {
-        this.citasCompletadas = res
+        const citas = res.data || [];
+        this.citasCompletadas = citas
           .filter((cita: any) => cita.estado === 'completada')
           .map((cita: any) => ({
             id: cita.id,
