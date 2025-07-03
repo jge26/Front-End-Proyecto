@@ -265,12 +265,16 @@
 
           <div class="flex space-x-4 pt-4">
             <button
+              matTooltip="Editar cita: Le permitirá modificar los detalles de la cita"
+              matTooltipShowDelay="500"
               (click)="startEditing(selectedAppointment)"
               class="flex-1 px-4 py-2 bg-yellow-500 text-white rounded-lg font-semibold hover:bg-yellow-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-yellow-500 transition"
             >
               Editar
             </button>
             <button
+              matTooltip="Cancelar cita: Será notificado al paciente"
+              matTooltipShowDelay="500"
               (click)="cancelAppointment(selectedAppointment)"
               class="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg font-semibold hover:bg-red-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 transition"
             >

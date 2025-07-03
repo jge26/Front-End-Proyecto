@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { MatTooltipModule } from '@angular/material/tooltip';
+
 import {
   ReactiveFormsModule,
   FormsModule, // Añadida la importación
@@ -19,7 +21,7 @@ import { AuthService } from '../../../services/auth.service';
 @Component({
   selector: 'app-disponibilidad',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule], // Añadido FormsModule aquí
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, MatTooltipModule], // Añadido FormsModule aquí
   templateUrl: './disponibilidad.component.html',
   styleUrls: ['./disponibilidad.component.css'],
 })
@@ -637,6 +639,12 @@ export class DisponibilidadComponent implements OnInit {
 
   get disponibilidadArray(): FormArray {
     return this.disponibilidadForm.get('disponibilidad') as FormArray;
+  }
+
+  getTooltipBloque(bloque: any): string {
+    if (!bloque.activo) return 'Este bloque está deshabilitado y no será visible para pacientes.';
+    if (bloque.tiene_citas) return 'Este bloque ya tiene citas asignadas. No se puede modificar.';
+    return 'Bloque disponible. Puede modificarlo o bloquearlo si lo desea.';
   }
 
   agregarDia(diaSemana: number): void {

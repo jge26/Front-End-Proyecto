@@ -115,7 +115,7 @@ export class MisPacientesComponent implements OnInit {
       edad--;
     }
     return edad;
-  }  
+  }
 
   // Cerrar modal
   cerrarModal(): void {
@@ -130,16 +130,17 @@ export class MisPacientesComponent implements OnInit {
   }
   descargarPDF(cita: Cita): void {
     this.diagnosisService.downloadLicensePDF(cita.id).subscribe({
-      next: (res) => {
-        if (res.url) {
-          window.open(res.url, '_blank');
-        } else {
-          alert('No se encontró la URL del PDF.');
-        }
+      next: (res: Blob) => {
+        const blobUrl = URL.createObjectURL(res);
+        const a = document.createElement('a');
+        a.href = blobUrl;
+        a.download = `licencia_cita_${cita.id}.pdf`;
+        a.click();
+        URL.revokeObjectURL(blobUrl); // Limpia memoria
       },
       error: () => {
-        alert('No se pudo descargar el diagnóstico.');
-      }
+        alert('No se pudo descargar el PDF del diagnóstico.');
+      },
     });
   }
 

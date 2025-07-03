@@ -229,6 +229,8 @@
           <!-- Bloques de horario - Añade tooltip y mejoras visuales para confirmación -->
           <div *ngIf="obtenerBloquesPorDia(dia).length > 0; else sinBloques" class="space-y-2">
             <div *ngFor="let bloque of obtenerBloquesPorDia(dia)"
+                [matTooltip]="getTooltipBloque(bloque)"
+                matTooltipShowDelay="500"
                  [ngClass]="{
                    'bg-green-50 border-green-200': bloque.activo && !bloque.tiene_citas,
                    'bg-yellow-50 border-yellow-200': bloque.activo && bloque.tiene_citas,
@@ -239,6 +241,8 @@
               <!-- Acciones rápidas (visibles al hover) -->
               <div class="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity flex space-x-1">
                 <button *ngIf="bloque.activo && !bloque.tiene_citas"
+                        matTooltip="Bloquear este bloque para impedir que se agenden citas"
+                        matTooltipHideDelay="500"
                         (click)="bloquearDisponibilidad(bloque)"
                         class="p-1 bg-red-100 text-red-700 rounded hover:bg-red-200 transition-colors"
                         title="Bloquear disponibilidad">
@@ -247,6 +251,8 @@
                   </svg>
                 </button>
                 <button *ngIf="!bloque.activo"
+                        matTooltip="Habilitar este bloque para que se puedan agendar citas"
+                        matTooltipHideDelay="500"
                         (click)="desbloquearDisponibilidad(bloque)"
                         class="p-1 bg-green-100 text-green-700 rounded hover:bg-green-200 transition-colors"
                         title="Habilitar disponibilidad">
@@ -255,6 +261,8 @@
                   </svg>
                 </button>
                 <button (click)="eliminarBloque(bloque)"
+                        matTooltip="Eliminar este bloque de forma permanente"
+                        matTooltipHideDelay="500"
                         class="p-1 bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition-colors"
                         title="Eliminar permanentemente este bloque">
                   <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -287,6 +295,8 @@
 
             <!-- Botón para agregar más bloques -->
             <button
+              matTooltip="Agregar un nuevo bloque para este día"
+              matTooltipHideDelay="500"
               (click)="agregarBloqueParaDia(dia)"
               class="w-full text-xs py-1 border border-dashed border-gray-300 rounded hover:bg-gray-50 text-gray-500 transition-colors"
             >
