@@ -1,18 +1,28 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class DiagnosisService {
-  private apiUrl = 'http://localhost:8000/api'; // Ajusta según tu backend
+  
+    private getHeaders() {
+      const token = localStorage.getItem('token');
+      return new HttpHeaders({
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+        Authorization: `Bearer ${token}`,
+      });
+    }
+  private apiUrl = 'http://localhost:8000/api/diagnostico'; 
 
   constructor(private http: HttpClient) {}
 
   // Crear un nuevo diagnóstico
   createDiagnosis(data: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/registrarDiagnostico`, data);
+    const headers = this.getHeaders();
+    return this.http.post(`${this.apiUrl}/registrar`, data, { headers });
   }
 
   createLicense(data: any): Observable<any> {

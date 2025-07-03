@@ -33,14 +33,9 @@
           <!-- Columna: Paciente -->
           <td class="px-6 py-4 whitespace-nowrap">
             <div class="flex items-center">
-              <!-- Iniciales del paciente -->
-              <div class="flex-shrink-0 h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 font-semibold">
-                {{ cita.pacienteIniciales }}
-              </div>
-              <!-- Nombre y edad -->
+              <!-- rere y edad -->
               <div class="ml-4">
-                <div class="text-sm font-medium text-gray-900">{{ cita.pacienteNombre }}</div>
-                <div class="text-sm text-gray-500">{{ cita.pacienteEdad }} años</div>
+                <div class="text-sm font-medium text-gray-900">{{ cita.paciente.nombre }}</div>
               </div>
             </div>
           </td>
@@ -54,7 +49,6 @@
           <!-- Columna: Hora -->
           <td class="px-6 py-4 whitespace-nowrap">
             <div class="text-sm text-gray-900">{{ cita.hora }}</div>
-            <div class="text-xs text-gray-500">{{ cita.duracion }}</div>
           </td>
 
           <!-- Columna: Estado -->
@@ -66,27 +60,18 @@
 
         <!-- Columna Diagnóstico -->
         <td class="px-6 py-4 whitespace-nowrap">
-        <span 
-            class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full"
-            [ngClass]="{
-            'bg-green-100 text-green-800': cita.tieneDiagnostico,
-            'bg-yellow-100 text-yellow-800': !cita.tieneDiagnostico
-            }">
-            {{ cita.tieneDiagnostico ? 'Completado' : 'Pendiente' }}
-        </span>
+
         </td>
 
           <!-- Columna Acciones -->
         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
         <button 
             class="text-[#2EC4B6] hover:text-[#27ADA1] mr-3"
-            *ngIf="cita.tieneDiagnostico"
             (click)="verDiagnostico(cita)">
             Ver diagnóstico
         </button>
         <button 
             class="text-[#2EC4B6] hover:text-[#27ADA1] mr-3"
-            *ngIf="!cita.tieneDiagnostico"
             (click)="generarDiagnostico(cita)">
             Generar diagnóstico
         </button>
