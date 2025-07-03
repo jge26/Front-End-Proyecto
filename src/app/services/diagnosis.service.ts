@@ -41,13 +41,18 @@ export class DiagnosisService {
 
   // Descargar PDF de licencia
   downloadLicensePDF(appointmentId: number): Observable<Blob> {
+    const token = localStorage.getItem('token');
+
+    const headers = {
+      Authorization: `Bearer ${token}`,
+    };
+
     return this.http.post(
       `${this.apiUrl}/licencia/pdf/citaLicencia`,
+      { appointment_id: appointmentId },
       {
-        appointment_id: appointmentId,
-      },
-      {
-        responseType: 'blob', // muy importante para PDF
+        headers,
+        responseType: 'blob',
       }
     );
   }
@@ -60,5 +65,19 @@ export class DiagnosisService {
     };
 
     return this.http.get(`${this.apiUrl}/paciente/historial`, { headers });
+  }
+
+  verDiagnostico(appointmentId: number): Observable<any> {
+    const token = localStorage.getItem('token');
+    const headers = {
+      Authorization: `Bearer ${token}`,
+    };
+
+    return this.http.post(
+      `${this.apiUrl}/diagnostico/ver`,
+      { appointment_id: appointmentId },
+      { headers }
+    );
+
   }
 }
