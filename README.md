@@ -1,27 +1,28 @@
-# FrontEndProyecto1
+# Clinica
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 17.3.14.
+¡Bienvenido al repositorio del proyecto web Clinica! Aquí encontrarás toda la información y recursos necesarios para empezar con el despliegue y desarrollo.
 
-## Development server
+## 🚀 Pasos iniciales para el despliegue
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+Si es la primera vez que despliegas este proyecto en un servidor o deseas ejecutarlo en tu entorno local después de clonarlo, sigue estos pasos:
 
-## Code scaffolding
+1. 📦 Instalar dependencias Node/JS: `npm install`.
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+## 🏠 ¿Cómo correr el proyecto en mi entorno local?
 
-## Build
+Para arrancar el proyecto en tu entorno local, ejecuta los siguientes comandos:
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+1. 🌐 `ng serve` - Para levantar el servidor de Angular 17
 
-## Running unit tests
+## 👥 Ayudantes
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+👤 **David Alvarez**
 
-## Running end-to-end tests
+-   💼 _FullStack Developer_
+-   📧 [Email](mailto:david.alvarez@alumnos.ucn.cl)
+-   🌐 [LinkedIn](https://www.linkedin.com/in/deiviid/) | [Personal Website](http://www.deiviid.com)
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+👤 **Renato Morales**
 
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+-   💼 _FullStack Developer_
+-   📧 [Email](mailto:rento.morales@alumnos.ucn.cl).

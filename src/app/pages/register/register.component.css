@@ -1,0 +1,109 @@
+/* Estilos específicos para la página de registro */
+
+/* Estructura principal de los campos de formulario */
+.form-field {
+  margin-bottom: 0.25rem;
+}
+
+/* Clase para el contenedor que junta el input y el icono */
+.input-with-icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+/* Estilos para los campos de entrada */
+.input-field {
+  width: 100%;
+  height: 3.5rem;
+  padding: 0.75rem 1rem 0.75rem 3rem; /* Padding a la izquierda para dejar espacio al icono */
+  font-size: 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  background-color: #fef7f7; /* Fondo claro rosado como en la imagen */
+  transition: all 0.2s;
+}
+
+/* Estilos para el campo en estado normal */
+.input-field:not(.input-error) {
+  background-color: #fef7f7;
+}
+
+/* Estilos para el campo con focus */
+.input-field:focus {
+  border-color: #2EC4B6;
+  box-shadow: 0 0 0 3px rgba(46, 196, 182, 0.2);
+  outline: none;
+}
+
+/* Posición del icono dentro del campo */
+.field-icon {
+  position: absolute;
+  left: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #2EC4B6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+}
+
+/* Tamaño y color del icono */
+.icon {
+  width: 20px;
+  height: 20px;
+  color: #2EC4B6;
+  stroke-width: 2px;
+}
+
+/* Estilo para los mensajes de error */
+.error-message {
+  color: #e53e3e;
+  font-size: 0.8rem;
+  margin-top: 0.2rem;
+  padding-left: 0.5rem;
+}
+
+/* Estilo para campos con error */
+.input-error {
+  border-color: #e53e3e !important;
+}
+
+/* Estilos para campos deshabilitados */
+.input-field:disabled {
+  background-color: #f7fafc;
+  cursor: not-allowed;
+}
+
+/* Asegurar que los iconos tengan el color correcto incluso en campos con error */
+.input-error ~ .field-icon .icon {
+  color: #e53e3e;
+}
+
+/* Animación de error */
+@keyframes shake {
+  10%, 90% { transform: translate3d(-1px, 0, 0); }
+  20%, 80% { transform: translate3d(2px, 0, 0); }
+  30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+  40%, 60% { transform: translate3d(4px, 0, 0); }
+}
+
+.error-shake {
+  animation: shake 0.82s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+/* Media queries para responsividad */
+@media (max-width: 768px) {
+  .input-field {
+    height: 3.25rem;
+    font-size: 0.95rem;
+  }
+}
+
+/* Placeholder con color más tenue */
+.input-field::placeholder {
+  color: #a0aec0;
+  opacity: 0.7;
+}

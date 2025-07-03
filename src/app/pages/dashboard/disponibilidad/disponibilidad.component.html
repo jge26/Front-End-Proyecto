@@ -1,0 +1,507 @@
+<div class="p-4 md:p-6 max-w-7xl mx-auto">
+  <!-- Header con paleta azul y minimalista -->
+  <div class="mb-6 bg-gradient-to-r from-blue-600 to-blue-500 rounded-xl shadow-md overflow-hidden">
+    <div class="p-6 flex flex-col md:flex-row justify-between items-start md:items-center">
+      <div>
+        <h1 class="text-2xl md:text-3xl font-bold text-white">Gestión de Disponibilidad</h1>
+        <p class="mt-1 text-blue-50 font-medium">Configure sus bloques de atención semanal</p>
+      </div>
+      <div class="mt-4 md:mt-0 bg-white/10 backdrop-blur-sm py-2 px-4 rounded-lg flex items-center self-start">
+        <svg class="w-5 h-5 text-white mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+        </svg>
+        <span class="text-white font-medium">Dr. {{user?.name}} {{user?.lastname}}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notificaciones con diseño minimalista -->
+  <div *ngIf="successMessage" class="mb-5 p-4 bg-green-50 border-l-4 border-green-500 rounded-md flex items-center animate-fadeIn shadow-sm" role="alert">
+    <div class="bg-green-500 p-1.5 rounded-full mr-3">
+      <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+      </svg>
+    </div>
+    <p class="text-green-800">{{ successMessage }}</p>
+    <button (click)="successMessage = ''" class="ml-auto text-green-700 hover:text-green-900">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+      </svg>
+    </button>
+  </div>
+
+  <div *ngIf="errorMessage" class="mb-5 p-4 bg-red-50 border-l-4 border-red-500 rounded-md flex items-center animate-fadeIn shadow-sm" role="alert">
+    <div class="bg-red-500 p-1.5 rounded-full mr-3">
+      <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+      </svg>
+    </div>
+    <p class="text-red-800">{{ errorMessage }}</p>
+    <button (click)="errorMessage = ''" class="ml-auto text-red-700 hover:text-red-900">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Loading spinner con diseño minimalista -->
+  <div *ngIf="loadingData" class="bg-white rounded-xl shadow-md p-8 flex flex-col items-center justify-center">
+    <div class="w-12 h-12 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mb-4"></div>
+    <p class="text-gray-600">Cargando su disponibilidad...</p>
+  </div>
+
+  <!-- Vista principal - Diseño minimalista -->
+  <div *ngIf="!loadingData && !mostrarFormCreacion" class="space-y-6">
+    <!-- Panel de configuración rápida - Rediseñado para ser más limpio -->
+    <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+      <div class="border-b border-gray-100 p-5">
+        <h2 class="text-lg font-medium text-gray-800">Configuración rápida</h2>
+      </div>
+
+      <div class="p-5 space-y-5">
+        <!-- Botones de selección rápida de bloques -->
+        <div class="mb-2 flex gap-2">
+          <button
+            type="button"
+            (click)="limpiarBloqueSeleccionados()"
+            class="px-3 py-1 text-xs border border-gray-300 rounded hover:bg-gray-100"
+          >
+            Limpiar selección
+          </button>
+          <button
+            type="button"
+            (click)="seleccionarBloquesPorRango('mañana')"
+            class="px-3 py-1 text-xs border border-blue-300 rounded hover:bg-blue-50 text-blue-700"
+          >
+            Bloques mañana
+          </button>
+          <button
+            type="button"
+            (click)="seleccionarBloquesPorRango('tarde')"
+            class="px-3 py-1 text-xs border border-blue-300 rounded hover:bg-blue-50 text-blue-700"
+          >
+            Bloques tarde
+          </button>
+          <button
+            type="button"
+            (click)="seleccionarBloquesPorRango('todos')"
+            class="px-3 py-1 text-xs border border-blue-300 rounded hover:bg-blue-50 text-blue-700"
+          >
+            Todos los bloques
+          </button>
+        </div>
+
+        <!-- Selección de bloques horarios con marcas visuales para selección múltiple -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Paso 1: Seleccione uno o varios bloques horarios</label>
+          <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+            <button
+              *ngFor="let bloque of bloquesPredefinidos"
+              (click)="seleccionarBloquePredefinido(bloque)"
+              [ngClass]="{
+                'ring-2 ring-blue-500 bg-blue-50': esBloqueSeleccionado(bloque.id),
+                'hover:bg-gray-50': !esBloqueSeleccionado(bloque.id)
+              }"
+              class="border rounded-lg p-3 text-left transition-colors focus:outline-none relative"
+            >
+              <!-- Contenido del bloque - Sin mostrar precio predeterminado -->
+              <div class="font-medium text-gray-800">{{bloque.nombre}}</div>
+              <div class="text-xs text-gray-500">{{bloque.horaInicio}} - {{bloque.horaFin}}</div>
+              <!-- Quitamos la muestra del precio -->
+
+              <!-- Indicador de selección -->
+              <div *ngIf="esBloqueSeleccionado(bloque.id)" class="absolute top-2 right-2">
+                <div class="w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center text-white">
+                  <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                  </svg>
+                </div>
+              </div>
+            </button>
+          </div>
+
+          <!-- Resumen de selección -->
+          <div *ngIf="bloquesPredefinidosSeleccionados.length > 0" class="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
+            <h4 class="font-medium text-blue-800 mb-2">Bloques seleccionados: {{bloquesPredefinidosSeleccionados.length}}</h4>
+            <div class="flex flex-wrap gap-2">
+              <div *ngFor="let bloque of bloquesPredefinidosSeleccionados" class="px-2 py-1 bg-white border border-blue-300 rounded text-xs flex items-center">
+                <span class="text-blue-700">{{ formatearHoraVisualizacion(bloque.horaInicio) }}-{{ formatearHoraVisualizacion(bloque.horaFin) }}</span>
+                <button (click)="seleccionarBloquePredefinido(bloque)" class="ml-1 text-blue-500 hover:text-blue-700">
+                  <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Precio personalizado - Requiere ngModel -->
+        <div *ngIf="bloquesPredefinidosSeleccionados.length > 0" class="mt-4">
+          <label class="block text-sm font-medium text-gray-700 mb-2">
+            Ingrese el precio para todos los bloques seleccionados <span class="text-red-500">*</span>
+          </label>
+          <div class="flex items-center">
+            <div class="relative rounded-md shadow-sm flex-grow">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <span class="text-gray-500 sm:text-sm">$</span>
+              </div>
+              <input
+                type="number"
+                [(ngModel)]="precioPersonalizado"
+                name="precioPersonalizado"
+                min="1000"
+                max="999999"
+                required
+                class="w-full pl-7 py-2 pr-3 rounded-md border border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+                placeholder="Ingrese el precio"
+              >
+            </div>
+            <span class="ml-3 text-sm" [ngClass]="precioPersonalizado > 0 ? 'text-gray-500' : 'text-red-500'">
+              {{ precioPersonalizado > 0 ? formatoMoneda(precioPersonalizado) : 'Requiere precio' }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Selección de días de la semana - No cambia -->
+        <div class="mt-5">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Paso 2: Seleccione los días</label>
+          <div class="flex flex-wrap gap-2">
+            <button
+              *ngFor="let dia of diasSemana | keyvalue"
+              (click)="toggleDiaParaAplicarBloque(+dia.key)"
+              [ngClass]="{
+                'bg-blue-500 text-white': esDiaSeleccionadoParaBloque(+dia.key),
+                'bg-gray-100 text-gray-800 hover:bg-gray-200': !esDiaSeleccionadoParaBloque(+dia.key)
+              }"
+              class="px-3 py-1.5 rounded-md text-sm transition-colors"
+            >
+              {{dia.value}}
+            </button>
+          </div>
+        </div>
+
+        <!-- Botón para aplicar - Muestra cantidad de bloques a crear -->
+        <div class="flex justify-end pt-4">
+          <button
+            (click)="aplicarBloqueAMultiplesDias()"
+            [disabled]="bloquesPredefinidosSeleccionados.length === 0 || diasParaAplicarBloque.length === 0 || precioPersonalizado <= 0 || loading"
+            class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
+          >
+            <svg *ngIf="loading" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            {{ precioPersonalizado <= 0 ? 'Ingrese un precio' : 'Crear ' + bloquesPredefinidosSeleccionados.length * diasParaAplicarBloque.length + ' bloques' }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Vista de calendario - Rediseñada con cards más minimalistas -->
+    <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+      <div class="border-b border-gray-100 p-5 flex justify-between items-center">
+        <h2 class="text-lg font-medium text-gray-800">Vista semanal</h2>
+        <button
+          (click)="agregarNuevoBloque()"
+          class="inline-flex items-center px-3 py-1.5 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors"
+        >
+          <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+          </svg>
+          Nuevo bloque
+        </button>
+      </div>
+
+      <!-- Vista de días de la semana -->
+      <div class="grid grid-cols-7 gap-px bg-gray-200">
+        <!-- Cabeceras de días -->
+        <div *ngFor="let dia of [1, 2, 3, 4, 5, 6, 7]"
+             class="bg-gray-50 py-2 px-1 text-center border-b border-gray-200">
+          <p class="font-medium text-gray-800">{{ diasSemana[dia] }}</p>
+          <p class="text-xs text-gray-500">{{ obtenerFechaPorDia(dia) }}</p>
+        </div>
+
+        <!-- Contenido para cada día -->
+        <div *ngFor="let dia of [1, 2, 3, 4, 5, 6, 7]"
+             class="bg-white p-2 min-h-[150px] max-h-[450px] overflow-y-auto custom-scrollbar">
+
+          <!-- Bloques de horario - Añade tooltip y mejoras visuales para confirmación -->
+          <div *ngIf="obtenerBloquesPorDia(dia).length > 0; else sinBloques" class="space-y-2">
+            <div *ngFor="let bloque of obtenerBloquesPorDia(dia)"
+                [matTooltip]="getTooltipBloque(bloque)"
+                matTooltipShowDelay="500"
+                 [ngClass]="{
+                   'bg-green-50 border-green-200': bloque.activo && !bloque.tiene_citas,
+                   'bg-yellow-50 border-yellow-200': bloque.activo && bloque.tiene_citas,
+                   'bg-red-50 border-red-200': !bloque.activo
+                 }"
+                 class="p-2 rounded border text-sm relative group">
+
+              <!-- Acciones rápidas (visibles al hover) -->
+              <div class="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity flex space-x-1">
+                <button *ngIf="bloque.activo && !bloque.tiene_citas"
+                        matTooltip="Bloquear este bloque para impedir que se agenden citas"
+                        matTooltipHideDelay="500"
+                        (click)="bloquearDisponibilidad(bloque)"
+                        class="p-1 bg-red-100 text-red-700 rounded hover:bg-red-200 transition-colors"
+                        title="Bloquear disponibilidad">
+                  <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </button>
+                <button *ngIf="!bloque.activo"
+                        matTooltip="Habilitar este bloque para que se puedan agendar citas"
+                        matTooltipHideDelay="500"
+                        (click)="desbloquearDisponibilidad(bloque)"
+                        class="p-1 bg-green-100 text-green-700 rounded hover:bg-green-200 transition-colors"
+                        title="Habilitar disponibilidad">
+                  <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                  </svg>
+                </button>
+                <button (click)="eliminarBloque(bloque)"
+                        matTooltip="Eliminar este bloque de forma permanente"
+                        matTooltipHideDelay="500"
+                        class="p-1 bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition-colors"
+                        title="Eliminar permanentemente este bloque">
+                  <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                </button>
+              </div>
+
+              <!-- Hora y precio -->
+              <div class="font-medium">{{ formatearHoraVisualizacion(bloque.hora_inicio) }} - {{ formatearHoraVisualizacion(bloque.hora_fin) }}</div>
+              <div class="text-xs mt-1 text-gray-600">{{ formatoMoneda(bloque.precio) }}</div>
+
+              <!-- Indicador de estado -->
+              <div *ngIf="bloque.activo && !bloque.tiene_citas"
+                   class="mt-2 flex items-center text-xs text-green-700">
+                <div class="w-2 h-2 rounded-full bg-green-500 mr-1"></div>
+                <span>Disponible</span>
+              </div>
+              <div *ngIf="bloque.activo && bloque.tiene_citas"
+                   class="mt-2 flex items-center text-xs text-yellow-700">
+                <div class="w-2 h-2 rounded-full bg-yellow-500 mr-1"></div>
+                <span>Con cita</span>
+              </div>
+              <div *ngIf="!bloque.activo"
+                   class="mt-2 flex items-center text-xs text-red-700">
+                <div class="w-2 h-2 rounded-full bg-red-500 mr-1"></div>
+                <span>Bloqueado</span>
+              </div>
+            </div>
+
+            <!-- Botón para agregar más bloques -->
+            <button
+              matTooltip="Agregar un nuevo bloque para este día"
+              matTooltipHideDelay="500"
+              (click)="agregarBloqueParaDia(dia)"
+              class="w-full text-xs py-1 border border-dashed border-gray-300 rounded hover:bg-gray-50 text-gray-500 transition-colors"
+            >
+              + Agregar bloque
+            </button>
+          </div>
+
+          <!-- Cuando no hay bloques -->
+          <ng-template #sinBloques>
+            <div class="h-full flex flex-col items-center justify-center text-center p-2">
+              <svg class="w-8 h-8 text-gray-300 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              <button
+                (click)="agregarBloqueParaDia(dia)"
+                class="mt-2 text-xs py-1 px-2 border border-blue-300 text-blue-600 rounded hover:bg-blue-50"
+              >
+                Agregar bloque
+              </button>
+            </div>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+
+    <!-- Leyenda de colores - Más minimalista -->
+    <div class="bg-white p-4 rounded-xl shadow-sm grid grid-cols-3 gap-2">
+      <div class="flex items-center">
+        <div class="w-3 h-3 rounded-full bg-green-500 mr-2"></div>
+        <span class="text-sm text-gray-600">Disponible</span>
+      </div>
+      <div class="flex items-center">
+        <div class="w-3 h-3 rounded-full bg-yellow-500 mr-2"></div>
+        <span class="text-sm text-gray-600">Con cita</span>
+      </div>
+      <div class="flex items-center">
+        <div class="w-3 h-3 rounded-full bg-red-500 mr-2"></div>
+        <span class="text-sm text-gray-600">Bloqueado</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal para agregar bloque - Versión simplificada -->
+  <div *ngIf="mostrarModal"
+       class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fadeIn">
+    <div class="bg-white rounded-lg shadow-xl w-full max-w-md p-6 relative animate-slideUp">
+      <!-- Cabecera del modal -->
+      <div class="flex justify-between items-center mb-5">
+        <h3 class="text-lg font-semibold text-gray-800">Nuevo bloque horario</h3>
+        <button (click)="cerrarModal()"
+                class="p-1 hover:bg-gray-100 rounded-full transition-colors">
+          <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Formulario -->
+      <form [formGroup]="bloqueForm" (ngSubmit)="guardarBloque()" class="space-y-4">
+        <!-- Día de la semana -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Día de la semana</label>
+          <select
+            formControlName="dia_semana"
+            class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
+            <option *ngFor="let dia of diasSemana | keyvalue" [value]="dia.key">{{ dia.value }}</option>
+          </select>
+          <div *ngIf="bloqueForm.get('dia_semana')?.invalid && bloqueForm.get('dia_semana')?.touched"
+               class="mt-1 text-xs text-red-500">
+            Seleccione un día
+          </div>
+        </div>
+
+        <!-- Horario -->
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Hora inicio</label>
+            <input
+              type="time"
+              formControlName="hora_inicio"
+              class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
+            <div *ngIf="bloqueForm.get('hora_inicio')?.invalid && bloqueForm.get('hora_inicio')?.touched"
+                 class="mt-1 text-xs text-red-500">
+              Hora inválida
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Hora fin</label>
+            <input
+              type="time"
+              formControlName="hora_fin"
+              class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
+            <div *ngIf="bloqueForm.get('hora_fin')?.invalid && bloqueForm.get('hora_fin')?.touched"
+                 class="mt-1 text-xs text-red-500">
+              Hora inválida
+            </div>
+          </div>
+        </div>
+
+        <!-- Precio -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">
+            Precio <span class="text-red-500">*</span>
+          </label>
+          <div class="relative rounded-md shadow-sm">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <span class="text-gray-500 sm:text-sm">$</span>
+            </div>
+            <input
+              type="number"
+              formControlName="precio"
+              class="w-full pl-7 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+              placeholder="Ingrese el precio de la consulta">
+          </div>
+          <div *ngIf="bloqueForm.get('precio')?.invalid && bloqueForm.get('precio')?.touched"
+                class="mt-1 text-xs text-red-500">
+            Precio inválido (entre $1.000 y $9.999.999)
+          </div>
+        </div>
+
+        <!-- Botones de acción -->
+        <div class="flex justify-end space-x-3 pt-2">
+          <button
+            type="button"
+            (click)="cerrarModal()"
+            class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors">
+            Cancelar
+          </button>
+          <button
+            type="submit"
+            [disabled]="bloqueForm.invalid || loading"
+            class="px-4 py-2 bg-blue-600 border border-transparent rounded-md text-white hover:bg-blue-700 disabled:opacity-50 transition-colors flex items-center">
+            <span *ngIf="loading" class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></span>
+            Guardar
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal de confirmación para eliminar bloque -->
+  <div *ngIf="mostrarConfirmacion && bloqueAEliminar"
+       class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fadeIn">
+    <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6 relative animate-slideUp">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-medium text-gray-900">Confirmar eliminación</h3>
+        <button (click)="cancelarEliminarBloque()" class="text-gray-400 hover:text-gray-500">
+          <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-4">
+        <div class="flex">
+          <div class="flex-shrink-0">
+            <svg class="h-5 w-5 text-yellow-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+            </svg>
+          </div>
+          <div class="ml-3">
+            <p class="text-sm text-yellow-700">
+              Esta acción es irreversible. Está a punto de eliminar el siguiente bloque:
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-4 border rounded-lg mb-4">
+        <div class="flex justify-between items-center mb-2">
+          <span class="font-medium">{{ diasSemana[bloqueAEliminar.dia_semana] }}</span>
+          <span class="text-sm text-gray-500">{{ obtenerFechaPorDia(bloqueAEliminar.dia_semana) }}</span>
+        </div>
+        <div class="flex items-center text-sm">
+          <svg class="mr-2 h-4 w-4 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span>{{ formatearHoraVisualizacion(bloqueAEliminar.hora_inicio) }} - {{ formatearHoraVisualizacion(bloqueAEliminar.hora_fin) }}</span>
+        </div>
+        <div class="flex items-center text-sm mt-1">
+          <svg class="mr-2 h-4 w-4 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span>{{ formatoMoneda(bloqueAEliminar.precio) }}</span>
+        </div>
+      </div>
+
+      <div class="flex justify-end space-x-3">
+        <button
+          type="button"
+          class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none"
+          (click)="cancelarEliminarBloque()"
+        >
+          Cancelar
+        </button>
+        <button
+          type="button"
+          class="px-4 py-2 bg-red-600 border border-transparent rounded-md text-white hover:bg-red-700 focus:outline-none flex items-center"
+          (click)="confirmarEliminarBloque()"
+          [disabled]="loading"
+        >
+          <span *ngIf="loading" class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></span>
+          Eliminar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

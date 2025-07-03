@@ -1,18 +1,28 @@
 import { Component } from '@angular/core';
-import { Router, RouterModule } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [RouterModule],
+  imports: [CommonModule, RouterLink, MatTooltipModule],
   templateUrl: './home.component.html',
-  styleUrl: './home.component.css'
+  styleUrl: './home.component.css',
 })
-
 export class HomeComponent {
   constructor(private router: Router) {}
 
-  irALogin() {
+  navigateToLogin() {
     this.router.navigate(['/login']);
+  }
+
+  // Para suavizar el scroll al hacer clic en las anclas
+  scrollToSection(elementId: string): void {
+    const element = document.getElementById(elementId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
   }
 }

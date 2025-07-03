@@ -1,0 +1,253 @@
+/* Animaciones */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Estilos para bloques horarios */
+.hora-disponible {
+  transition: all 0.2s ease;
+  transform: translateY(0);
+}
+
+.hora-disponible:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.hora-seleccionada {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.hora-bloque {
+  transition: all 0.2s ease;
+  border: 1px solid #e2e8f0;
+}
+
+.hora-bloque-disponible {
+  cursor: pointer;
+}
+
+.hora-bloque-disponible:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-color: #3b82f6;
+}
+
+.hora-bloque-seleccionada {
+  border-color: #2563eb;
+  transform: translateY(-1px);
+}
+
+.hora-bloque-no-disponible {
+  opacity: 0.5;
+  text-decoration: line-through;
+  cursor: not-allowed;
+}
+
+/* Animación de carga */
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.pulsate {
+  animation: pulse 1.5s infinite;
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+.animate-slideUp {
+  animation: slideUp 0.4s ease-out forwards;
+}
+
+/* Responsive calendar grid */
+@media (max-width: 640px) {
+  .calendar-grid {
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+  }
+}
+
+/* Hover effects */
+.hover-card {
+  transition: all 0.2s ease-in-out;
+}
+
+.hover-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* Input focus styles */
+.custom-focus:focus {
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+  outline: none;
+  border-color: #3b82f6;
+}
+
+/* Estilos para los bloques horarios */
+.bloque-horario {
+  height: 70px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.bloque-horario:hover {
+  transform: translateY(-2px);
+}
+
+.bloque-horario-seleccionado {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Estilos para los bloques horarios */
+.horario-bloque {
+  transition: all 0.3s ease;
+  transform: translateY(0);
+}
+
+.horario-bloque:hover:not([disabled]) {
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Efecto al seleccionar */
+.horario-bloque-seleccionado {
+  position: relative;
+  animation: pulso 1s ease-in-out;
+}
+
+/* Animación de pulso para bloque seleccionado */
+@keyframes pulso {
+  0% {
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(59, 130, 246, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+  }
+}
+
+/* Estilo para bloques no disponibles */
+.horario-no-disponible {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Animación hover en bloques de horario */
+.horario-hover-efecto {
+  position: relative;
+  overflow: hidden;
+}
+
+.horario-hover-efecto::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateX(-100%);
+  transition: transform 0.3s ease-out;
+}
+
+.horario-hover-efecto:hover::after {
+  transform: translateX(0);
+}
+
+/* Agregar estos estilos para los diferentes estados */
+
+/* Estilo para bloque habilitado */
+.bloque-habilitado {
+  border: 1px solid #e2e8f0;
+  transition: all 0.2s ease;
+}
+
+.bloque-habilitado:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilo para bloque ocupado */
+.bloque-ocupado {
+  border: 1px solid #fed7d7;
+  background-color: #fff5f5;
+  opacity: 0.8;
+}
+
+.bloque-ocupado::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background-image: repeating-linear-gradient(
+    45deg,
+    rgba(255, 0, 0, 0.05),
+    rgba(255, 0, 0, 0.05) 5px,
+    transparent 5px,
+    transparent 10px
+  );
+}
+
+/* Estilo para bloque bloqueado */
+.bloque-bloqueado {
+  border: 1px solid #e2e8f0;
+  background-color: #edf2f7;
+  opacity: 0.7;
+}
+
+/* Estilo para bloque eliminado */
+.bloque-eliminado {
+  border: 1px solid #feebc8;
+  background-color: #fffaf0;
+  opacity: 0.6;
+}
+
+.bloque-eliminado::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background-image: repeating-linear-gradient(
+    -45deg,
+    rgba(246, 173, 85, 0.05),
+    rgba(246, 173, 85, 0.05) 5px,
+    transparent 5px,
+    transparent 10px
+  );
+}
