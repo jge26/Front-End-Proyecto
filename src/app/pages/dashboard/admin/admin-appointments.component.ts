@@ -9,6 +9,8 @@ import {
 } from '@angular/forms';
 import { AppointmentService } from '../../../services/appointment.service';
 import { AuthService } from '../../../services/auth.service';
+import { MatTooltipModule } from '@angular/material/tooltip';
+
 
 interface AdminAppointment {
   id: number;
@@ -26,7 +28,7 @@ interface AdminAppointment {
 @Component({
   selector: 'app-admin-appointments',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, MatTooltipModule],
   templateUrl: './admin-appointments.component.html',
   styleUrls: ['./admin-appointments.component.css'],
 })

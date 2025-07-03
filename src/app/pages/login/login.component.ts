@@ -5,11 +5,13 @@ import { CommonModule } from '@angular/common';
 import { AccesoService } from '../../services/acceso.service';
 import { AuthService } from '../../services/auth.service';
 import { trigger, transition, style, animate } from '@angular/animations';
+import { MatTooltipModule } from '@angular/material/tooltip';
+
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, MatTooltipModule],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css'],
   animations: [

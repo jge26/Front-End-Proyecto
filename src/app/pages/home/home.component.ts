@@ -2,11 +2,12 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { Router } from '@angular/router';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, MatTooltipModule],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css',
 })

@@ -64,6 +64,8 @@
         <div>
           <label for="especialidad" class="block text-sm font-medium text-gray-700 mb-1">Especialidad Médica</label>
           <select
+            matTooltip="Filtra los médicos por especialidad"
+            matTooltipHideDelay="500"
             formControlName="especialidad"
             id="especialidad"
             (change)="filtrarMedicosPorEspecialidad()"
@@ -78,6 +80,8 @@
         <div>
           <label for="medico" class="block text-sm font-medium text-gray-700 mb-1">Médico</label>
           <select
+            matTooltip="Seleccione un médico para ver su disponibilidad"
+            matTooltipHideDelay="500"
             formControlName="medico"
             id="medico"
             (change)="seleccionarMedico()"
@@ -101,7 +105,9 @@
             <div class="ml-4">
               <h3 class="text-lg font-medium text-blue-800">{{ medicoSeleccionado.nombre }} {{ medicoSeleccionado.apellido }}</h3>
               <p class="mt-1 text-blue-600">{{ medicoSeleccionado.especialidad.nombre }}</p>
-              <p class="mt-2 text-sm font-medium text-blue-900">
+              <p class="mt-2 text-sm font-medium text-blue-900" 
+                  matTooltip="Este es el valor de la consulta del médico seleccionado" 
+                  matTooltipHideDelay="500">
                 Valor consulta: {{ formatoPrecio(medicoSeleccionado.valor_consulta) }}
               </p>
               <div class="mt-2 text-sm text-blue-700">

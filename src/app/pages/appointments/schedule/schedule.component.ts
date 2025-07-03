@@ -4,6 +4,7 @@ import { ReactiveFormsModule, FormsModule, FormBuilder, FormGroup, Validators } 
 import { Router } from '@angular/router';
 import { AppointmentService } from '../../../services/appointment.service';
 import { AuthService } from '../../../services/auth.service';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { CalendarSelectorComponent } from '../../../components/calendar-selector/calendar-selector.component';
 import {
   Doctor,
@@ -16,7 +17,7 @@ import {
 @Component({
   selector: 'app-schedule',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, CalendarSelectorComponent],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, CalendarSelectorComponent, MatTooltipModule],
   templateUrl: './schedule.component.html',
   styleUrls: ['./schedule.component.css']
 })
