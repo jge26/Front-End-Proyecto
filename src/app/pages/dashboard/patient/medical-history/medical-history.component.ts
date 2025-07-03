@@ -40,6 +40,7 @@ import { DiagnosisService } from '../../../../services/diagnosis.service';
           Se encontraron {{ historial.length }} registros en tu historial
           médico.
         </p>
+
         <table class="min-w-full text-sm text-left border">
           <thead class="bg-gray-100">
             <tr>
@@ -47,7 +48,7 @@ import { DiagnosisService } from '../../../../services/diagnosis.service';
               <th class="py-2 px-4 border-b">Diagnóstico</th>
               <th class="py-2 px-4 border-b">Tratamiento</th>
               <th class="py-2 px-4 border-b">Doctor</th>
-              <th class="py-2 px-4 border-b text-center">Licencia</th>
+              <th class="py-2 px-4 border-b text-center">Opciones</th>
             </tr>
           </thead>
           <tbody>
@@ -58,22 +59,58 @@ import { DiagnosisService } from '../../../../services/diagnosis.service';
               <td class="py-2 px-4 border-b">{{ item.diagnostico }}</td>
               <td class="py-2 px-4 border-b">{{ item.tratamiento }}</td>
               <td class="py-2 px-4 border-b">{{ item.doctor }}</td>
-              <td class="py-2 px-4 border-b text-center">
+              <td class="py-2 px-4 border-b text-center space-y-2">
+                <button
+                  class="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+                  (click)="verDiagnostico(item.cita_id)"
+                >
+                  Ver Diagnóstico
+                </button>
+                <br />
                 <ng-container *ngIf="item.tieneLicencia; else noLicencia">
                   <button
-                    class="inline-block px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 transition"
+                    class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 transition"
                     (click)="descargarPDF(item.cita_id)"
                   >
                     Descargar PDF
                   </button>
                 </ng-container>
                 <ng-template #noLicencia>
-                  <span class="text-gray-400 italic">No emitida</span>
+                  <span class="text-gray-400 italic">Licencia no emitida</span>
                 </ng-template>
               </td>
             </tr>
           </tbody>
         </table>
+      </div>
+    </div>
+    <!-- Modal Diagnóstico -->
+    <div
+      *ngIf="modalDiagnosticoVisible"
+      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+    >
+      <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
+        <h2 class="text-xl font-semibold mb-4 text-gray-800">🧾 Diagnóstico</h2>
+        <p class="mb-2">
+          <span class="font-medium">📌 Motivo:</span>
+          {{ diagnosticoActivo.motivo_consulta }}
+        </p>
+        <p class="mb-2">
+          <span class="font-medium">🩺 Diagnóstico:</span>
+          {{ diagnosticoActivo.diagnostico }}
+        </p>
+        <p class="mb-4">
+          <span class="font-medium">💊 Tratamiento:</span>
+          {{ diagnosticoActivo.tratamiento }}
+        </p>
+        <div class="text-right">
+          <button
+            class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+            (click)="cerrarModalDiagnostico()"
+          >
+            Cerrar
+          </button>
+        </div>
       </div>
     </div>
   `,
@@ -114,8 +151,29 @@ export class MedicalHistoryComponent implements OnInit {
       },
       error: () => {
         alert('No se pudo descargar la licencia.');
-      }
+      },
+    });
+  }
+  modalDiagnosticoVisible = false;
+  diagnosticoActivo: any = {};
+
+  verDiagnostico(citaId: number) {
+    this.diagnosisService.verDiagnostico(citaId).subscribe({
+      next: (res) => {
+        if (res.status === 'success') {
+          this.diagnosticoActivo = res.diagnostico;
+          this.modalDiagnosticoVisible = true;
+        } else {
+          alert(res.message || 'No se encontró diagnóstico.');
+        }
+      },
+      error: () => {
+        alert('Error al consultar el diagnóstico.');
+      },
     });
   }
 
+  cerrarModalDiagnostico() {
+    this.modalDiagnosticoVisible = false;
+  }
 }
