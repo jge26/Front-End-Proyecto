@@ -5,17 +5,51 @@ import { RouterModule } from '@angular/router';
 import { AppointmentService } from '../../../services/appointment.service';
 import { DiagnosisService } from '../../../services/diagnosis.service';
 
-// Interfaz para definir el tipo de datos de una cita
+// Interfaces 
+interface Response {
+
+  status: string;
+  estadisticas: {
+    total: number;
+    agendadas: number;
+    completadas: number;
+    canceladas: number;
+  }
+  data: Dia[];
+}
+
+interface Dia {
+
+  fecha: Date;
+  fecha_formateada: string;
+  dia_semana: string;
+  citas: [];
+}
+
 interface Cita {
   id: number;
-  pacienteIniciales: string;
-  pacienteNombre: string;
-  pacienteEdad: number;
+  paciente: paciente;
   fecha: Date;
-  hora: string;
-  duracion: string;
+  hora: string; 
+  fecha_formateada: string;
+  hora_formateada: string;
+  motivo: string;
   estado: string;
-  tieneDiagnostico: boolean;
+  precio: string;
+  observaciones: string;
+  puede_cancelar: boolean;
+  puede_completar:boolean;
+}
+
+interface paciente {
+
+  id: number;
+  nombre: string;
+  apellido: string;
+  nombre_completo: string
+  rut: string;
+  email: string;
+  telefono: string;
 }
 
 @Component({
@@ -38,18 +72,24 @@ export class MisPacientesComponent implements OnInit {
   ngOnInit(): void {
     this.appointmentService.getCitasDelMedico().subscribe({
       next: (res) => {
-        this.citasCompletadas = res
-          .filter((cita: any) => cita.estado === 'completada')
-          .map((cita: any) => ({
+        const respuesta: Response = res;
+        const dias: Dia[] = respuesta.data;
+        console.log(dias[0].citas)
+        this.citasCompletadas = dias[0].citas
+          .filter((cita: Cita) => cita.estado === 'completada')
+          .map((cita: Cita) => ({
             id: cita.id,
-            pacienteIniciales: this.getIniciales(cita.paciente?.nombre || 'SN'),
-            pacienteNombre: cita.paciente?.nombre || 'Sin nombre',
-            pacienteEdad: this.calcularEdad(cita.paciente?.fecha_nacimiento),
+            paciente: cita.paciente,
             fecha: new Date(cita.fecha),
-            hora: cita.hora_inicio,
-            duracion: cita.duracion + ' min',
+            hora: cita.hora,
+            fecha_formateada: cita.fecha_formateada,
+            hora_formateada: cita.hora_formateada,
+            motivo: cita.motivo,
             estado: cita.estado,
-            tieneDiagnostico: !!cita.diagnostico
+            precio: cita.precio,
+            observaciones: cita.observaciones,
+            puede_cancelar: cita.puede_cancelar,
+            puede_completar: cita.puede_completar
           }));
       },
       error: () => {
@@ -104,6 +144,6 @@ export class MisPacientesComponent implements OnInit {
   }
 
   verDiagnostico(cita: Cita): void {
-    this.router.navigate(['/dashboard/ver-diagnostico', cita.id]);
+    this.router.navigate(['/dashboard/ver-diagnostico', cita.paciente.id]);
   }
 }
