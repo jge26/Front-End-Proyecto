@@ -1,0 +1,179 @@
+<!-- Contenedor principal de la tabla -->
+<div class="bg-white rounded-lg shadow">
+  
+  <!-- Encabezado superior -->
+  <div class="px-6 py-4 border-b border-gray-200">
+    <div class="flex items-center justify-between">
+      <h2 class="text-lg font-semibold text-gray-800">Mis pacientes</h2>
+      <span class="text-sm text-gray-500">Citas médicas</span>
+    </div>
+  </div>
+
+  <!-- Contenedor con scroll horizontal en pantallas pequeñas -->
+  <div class="overflow-x-auto">
+    <table class="min-w-full divide-y divide-gray-200">
+      
+      <!-- Encabezado de la tabla -->
+      <thead class="bg-gray-50">
+        <tr>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Paciente</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Hora</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Diagnóstico</th>
+          <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+        </tr>
+      </thead>
+
+      <!-- Cuerpo de la tabla -->
+      <tbody class="bg-white divide-y divide-gray-200">
+        <!-- Recorre cada cita completada -->
+        <tr *ngFor="let cita of citasCompletadas" class="hover:bg-gray-50">
+
+          <!-- Columna: Paciente -->
+          <td class="px-6 py-4 whitespace-nowrap">
+            <div class="flex items-center">
+              <!-- Iniciales del paciente -->
+              <div class="flex-shrink-0 h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 font-semibold">
+                {{ cita.pacienteIniciales }}
+              </div>
+              <!-- Nombre y edad -->
+              <div class="ml-4">
+                <div class="text-sm font-medium text-gray-900">{{ cita.pacienteNombre }}</div>
+                <div class="text-sm text-gray-500">{{ cita.pacienteEdad }} años</div>
+              </div>
+            </div>
+          </td>
+
+          <!-- Columna: Fecha -->
+          <td class="px-6 py-4 whitespace-nowrap">
+            <div class="text-sm text-gray-900">{{ cita.fecha | date: 'dd MMM yyyy' }}</div>
+            <div class="text-xs text-gray-500">{{ cita.fecha | date: 'EEEE' }}</div>
+          </td>
+
+          <!-- Columna: Hora -->
+          <td class="px-6 py-4 whitespace-nowrap">
+            <div class="text-sm text-gray-900">{{ cita.hora }}</div>
+            <div class="text-xs text-gray-500">{{ cita.duracion }}</div>
+          </td>
+
+          <!-- Columna: Estado -->
+          <td class="px-6 py-4 whitespace-nowrap">
+            <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+              Completada
+            </span>
+          </td>
+
+        <!-- Columna Diagnóstico -->
+        <td class="px-6 py-4 whitespace-nowrap">
+        <span 
+            class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full"
+            [ngClass]="{
+            'bg-green-100 text-green-800': cita.tieneDiagnostico,
+            'bg-yellow-100 text-yellow-800': !cita.tieneDiagnostico
+            }">
+            {{ cita.tieneDiagnostico ? 'Completado' : 'Pendiente' }}
+        </span>
+        </td>
+
+          <!-- Columna Acciones -->
+        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+        <button 
+            class="text-[#2EC4B6] hover:text-[#27ADA1] mr-3"
+            *ngIf="cita.tieneDiagnostico"
+            (click)="verDiagnostico(cita)">
+            Ver diagnóstico
+        </button>
+        <button 
+            class="text-[#2EC4B6] hover:text-[#27ADA1] mr-3"
+            *ngIf="!cita.tieneDiagnostico"
+            (click)="generarDiagnostico(cita)">
+            Generar diagnóstico
+        </button>
+        </td>
+
+        <!-- Overlay -->
+        <div *ngIf="modalVisible" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm transition-opacity duration-300">
+        <!-- Contenedor del modal -->
+        <div class="bg-white rounded-3xl shadow-xl w-full max-w-2xl p-8 relative animate-fade-in-down border border-gray-200">
+
+            <!-- Botón cerrar arriba -->
+            <button (click)="cerrarModal()"
+            class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+            </button>
+
+            <!-- Título -->
+            <h2 class="text-3xl font-bold text-gray-800 mb-6 border-b pb-4">Diagnóstico del Paciente</h2>
+
+            <!-- Contenido principal -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 text-gray-700 text-sm">
+            <div>
+                <p class="text-gray-500 font-medium">Motivo de consulta</p>
+                <p class="mt-1">{{ diagnosticoActual?.motivo_consulta }}</p>
+            </div>
+            <div>
+                <p class="text-gray-500 font-medium">Diagnóstico</p>
+                <p class="mt-1">{{ diagnosticoActual?.diagnostico }}</p>
+            </div>
+            <div>
+                <p class="text-gray-500 font-medium">Tratamiento</p>
+                <p class="mt-1">{{ diagnosticoActual?.tratamiento }}</p>
+            </div>
+            <div>
+                <p class="text-gray-500 font-medium">Medicamentos</p>
+                <p class="mt-1">{{ diagnosticoActual?.medicamentos }}</p>
+            </div>
+            <div *ngIf="diagnosticoActual?.notas" class="sm:col-span-2">
+                <p class="text-gray-500 font-medium">Notas adicionales</p>
+                <p class="mt-1">{{ diagnosticoActual?.notas }}</p>
+            </div>
+            </div>
+
+            <!-- Licencia médica -->
+            <div *ngIf="diagnosticoActual?.licencia" class="mt-8 bg-[#f9fafb] p-4 rounded-2xl border border-[#e5e7eb]">
+            <h3 class="text-md font-semibold text-[#2EC4B6] mb-3">Licencia médica</h3>
+            <div class="grid grid-cols-2 gap-4 text-sm text-gray-600">
+                <div>
+                <span class="font-medium">Inicio:</span>
+                {{ diagnosticoActual.licencia.fecha_inicio | date: 'dd MMM yyyy' }}
+                </div>
+                <div>
+                <span class="font-medium">Término:</span>
+                {{ diagnosticoActual.licencia.fecha_fin | date: 'dd MMM yyyy' }}
+                </div>
+                <div>
+                <span class="font-medium">Días:</span>
+                {{ diagnosticoActual.licencia.dias }}
+                </div>
+                <div class="col-span-2">
+                <span class="font-medium">Motivo:</span>
+                {{ diagnosticoActual.licencia.motivo }}
+                </div>
+            </div>
+            </div>
+
+            <!-- Acciones -->
+            <div class="mt-8 flex justify-end gap-3">
+            <button (click)="descargarPDF(cita)" class="px-5 py-2 bg-gray-200 text-gray-700 rounded-full font-medium shadow hover:bg-gray-300 transition">
+                Descargar diagnóstico
+            </button>
+            <button (click)="cerrarModal()" class="px-5 py-2 bg-[#2EC4B6] text-white rounded-full font-medium shadow hover:bg-[#27ADA1] transition">
+                Cerrar
+            </button>
+            </div>
+        </div>
+        </div>
+
+
+
+
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
